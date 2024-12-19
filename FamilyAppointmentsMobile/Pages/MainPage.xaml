@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:FamilyAppointmentsMobile.Controls"
+             xmlns:vm="clr-namespace:FamilyAppointmentsMobile.ViewModels" 
+             xmlns:models="clr-namespace:FamilyAppointmentsMobile.Models"
+             xmlns:cal="clr-namespace:Plugin.Maui.Calendar.Controls;assembly=Plugin.Maui.Calendar"
+             x:Class="FamilyAppointmentsMobile.Pages.MainPage"
+             BindingContext="{Binding Source={StaticResource Provider}, Path=MainView}"
+             x:DataType="vm:MainViewModel"
+             x:Name="Main"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <controls:NavigationBar />
+        <Grid Grid.Row="1" RowDefinitions="60, *" BackgroundColor="{StaticResource BackgroundGray}">
+            <HorizontalStackLayout HorizontalOptions="Center" Margin="8" Spacing="8">
+                <controls:DefaultEffectButton 
+                    ButtonText="Kalender Ansicht" 
+                    WidthRequest="150"
+                    HeightRequest="45" 
+                    Command="{Binding ChangeLayoutCommand}" 
+                    CommandParameter="{x:Static models:ELayoutType.Calendar}"/>
+                <controls:DefaultEffectButton 
+                    ButtonText="Warteschlange" 
+                    WidthRequest="150" 
+                    HeightRequest="45" 
+                    IsVisible="{Binding HasPendingItems}"
+                    Command="{Binding OpenPendingItemsCommand}"/>
+            </HorizontalStackLayout>
+
+            <Grid Grid.Row="1">
+                <CollectionView 
+                        Margin="8"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedFamilyMember}"
+                        SelectionChangedCommand="{Binding SelectedFamilyMemberActionCommand}"
+                        ItemsSource="{Binding FamilyMembers}" >
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout 
+                                Orientation="Vertical"
+                                Span="2" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:FamilyMember">
+                            <Border 
+                                    Margin="4"
+                                    Style="{StaticResource BorderStyle}"
+                                    BackgroundColor="{Binding MemberColor}" >
+                                <Label Text="{Binding Name}" FontSize="26" Style="{StaticResource BoldHandwrittenLabelStyle}" />
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Normal"></VisualState>
+                                        <VisualState Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="#11000000"></Setter>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

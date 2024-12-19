@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:FamilyAppointmentsMobile.Controls"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Name="Header"
+             x:DataType="controls:CalendarHeader"
+             x:Class="FamilyAppointmentsMobile.Controls.DefaultCalendarHeader">
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <Style x:Key="arrowButtonPrevStyle" TargetType="Button">
+                <Setter Property="FontFamily" Value="FontAwesomeSolid" />
+                <Setter Property="BorderColor" Value="Transparent" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="Text" Value="&#xf062;" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="TextColor" Value="DimGray" />
+            </Style>
+
+            <Style x:Key="arrowButtonNextStyle" TargetType="Button">
+                <Setter Property="FontFamily" Value="FontAwesomeSolid" />
+                <Setter Property="Text" Value="&#xf063;" />
+                <Setter Property="BorderColor" Value="Transparent" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="TextColor" Value="DimGray" />
+            </Style>
+            <Style x:Key="ArrowFooterButtonUpStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="FontFamily" Value="FontAwesomeSolid" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="HorizontalOptions" Value="End" />
+                <Setter Property="Text" Value="&#xf063;" />
+                <Setter Property="TextColor" Value="DimGray" />
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
+        </ResourceDictionary>
+    </ContentView.Resources>
+    <VerticalStackLayout
+        Spacing="4"
+        Grid.Row="0" 
+        BackgroundColor="{StaticResource BackgroundGray}"
+        HorizontalOptions="Fill"
+        VerticalOptions="Fill">
+        <Grid
+            Padding="8"
+            RowSpacing="6"
+            HorizontalOptions="Center"
+            WidthRequest="500"
+            IsVisible="{Binding BindingContext.ShowMonthPicker, Source={x:Reference Header}}"            
+            VerticalOptions="Start"
+            RowDefinitions="Auto"
+            ColumnDefinitions="*,*,*">
+            <controls:DefaultEffectButton 
+                Grid.Column="0"
+                Padding="0"
+                ImageSource="backarrow.png"
+                ButtonBackground="{Binding BindingContext.ArrowsBackgroundColor, Source={x:Reference Header}}"
+                HeightRequest="36"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                WidthRequest="36"
+                Command="{Binding BindingContext.PrevLayoutUnitCommand, Source={x:Reference Header}}" />
+            <Label
+                Grid.Column="1"
+                FontAttributes="Bold"
+                FontSize="18"
+                HorizontalOptions="Center"
+                Text="{Binding BindingContext.LayoutUnitText, Source={x:Reference Header}}"
+                TextColor="{Binding BindingContext.MonthLabelColor, Source={x:Reference Header}}"
+                VerticalOptions="Center" />
+            <controls:DefaultEffectButton 
+                Grid.Column="2"
+                Padding="0"
+                ImageSource="nextarrow.png"
+                ButtonBackground="{Binding BindingContext.ArrowsBackgroundColor, Source={x:Reference Header}}"
+                HeightRequest="36"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                WidthRequest="36"
+                Command="{Binding BindingContext.NextLayoutUnitCommand, Source={x:Reference Header}}" />
+        </Grid>
+        <Grid
+            Padding="8"
+            HorizontalOptions="Center"
+            IsVisible="{Binding BindingContext.ShowYearPicker, Source={x:Reference Header}}"
+            VerticalOptions="Start"
+            RowDefinitions="Auto"
+            RowSpacing="6"
+            WidthRequest="500"
+            ColumnDefinitions="*,*,*">
+            <controls:DefaultEffectButton 
+                Grid.Column="0"
+                Padding="0"
+                ImageSource="backarrow.png"
+                ButtonBackground="{Binding BindingContext.ArrowsBackgroundColor, Source={x:Reference Header}}"
+                HeightRequest="36"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                WidthRequest="36"
+                Command="{Binding BindingContext.PrevYearCommand, Source={x:Reference Header}}" />
+            <Label
+                Grid.Column="1"
+                FontAttributes="Bold"
+                FontSize="18"
+                HorizontalOptions="Center"
+                Text="{Binding BindingContext.Year, Source={x:Reference Header}}"
+                TextColor="{Binding BindingContext.YearLabelColor, Source={x:Reference Header}}"
+                VerticalOptions="Center" />
+            <controls:DefaultEffectButton 
+                Grid.Column="2"
+                Padding="0"
+                ImageSource="nextarrow.png"
+                ButtonBackground="{Binding BindingContext.ArrowsBackgroundColor, Source={x:Reference Header}}"
+                HeightRequest="36"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                WidthRequest="36"
+                Command="{Binding BindingContext.NextYearCommand, Source={x:Reference Header}}" />
+        </Grid>
+    </VerticalStackLayout>
+</ContentView>

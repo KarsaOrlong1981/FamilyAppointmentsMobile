@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopups:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"  
+             xmlns:mopupsanim="clr-namespace:Mopups.Animations;assembly=Mopups"
+             xmlns:controls="clr-namespace:FamilyAppointmentsMobile.Controls"
+             xmlns:models="clr-namespace:FamilyAppointmentsMobile.Models"
+             x:Class="FamilyAppointmentsMobile.Dialogs.MopUpMessageDialog"
+             xmlns:vm="clr-namespace:FamilyAppointmentsMobile.ViewModels"
+             x:DataType="vm:MopUpDialogViewModel"
+             HideSoftInputOnTapped="True" 
+             CloseWhenBackgroundIsClicked="false"
+             BackgroundColor="#90000000">
+    
+    <mopups:PopupPage.Animation>
+        <mopupsanim:ScaleAnimation
+            DurationIn="700"
+            EasingIn="BounceOut"
+            PositionIn="Bottom"
+            PositionOut="Bottom"
+            ScaleIn="1"
+            ScaleOut="0.8" />
+    </mopups:PopupPage.Animation>
+
+    <Border
+         WidthRequest="350" HeightRequest="500"
+         StrokeThickness="2"
+         Stroke="{StaticResource LightGrayColor}"
+         BackgroundColor="{StaticResource BackgroundGray}">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="10,10,10,10"/>
+        </Border.StrokeShape>
+        <Grid Margin="10" RowDefinitions="40,Auto,30,*, 80" >
+            <ImageButton Source="dark_icon_close_white.png" HeightRequest="30" WidthRequest="30" HorizontalOptions="End" Command="{Binding CloseDialogCommand}"/>
+            <Label 
+                 Grid.Row="1" 
+                 HorizontalOptions="Center"
+                 HorizontalTextAlignment="Center"
+                 Text="{Binding Title}" 
+                 FontSize="Title" 
+                 FontAttributes="Bold"
+                 TextDecorations="Underline"
+                 TextColor="White" />
+            <Label 
+                 Grid.Row="3" 
+                 HorizontalOptions="Center"
+                 HorizontalTextAlignment="Center"
+                 Text="{Binding Message}" 
+                 FontSize="Body" 
+                 TextColor="White" />
+            <HorizontalStackLayout
+                 Grid.Row="4"
+                 HorizontalOptions="Center" 
+                 Spacing="4"
+                 IsVisible="{Binding Type, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=YesNo}">
+                <controls:DefaultEffectButton 
+                     ButtonText="Ja"
+                     WidthRequest="100" 
+                     Command="{Binding AnswerCommand}" 
+                     CommandParameter="{x:Static models:EAnswerOptions.Yes}"/>
+                <controls:DefaultEffectButton 
+                     ButtonText="Nein"
+                     WidthRequest="100" 
+                     Command="{Binding AnswerCommand}" 
+                     CommandParameter="{x:Static models:EAnswerOptions.No}"/>
+            </HorizontalStackLayout>
+        </Grid>
+    </Border>
+</mopups:PopupPage>

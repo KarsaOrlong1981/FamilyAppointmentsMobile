@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FamilyAppointmentsMobile.ViewModels" 
+             xmlns:models="clr-namespace:FamilyAppointmentsMobile.Models"
+             xmlns:cal="clr-namespace:Plugin.Maui.Calendar.Controls;assembly=Plugin.Maui.Calendar"
+             xmlns:controls="clr-namespace:FamilyAppointmentsMobile.Controls"
+             x:DataType="vm:CalendarPageViewModel"
+             Unloaded="ContentPage_Unloaded"
+             x:Class="FamilyAppointmentsMobile.Pages.CalendarPage"
+             Title="CalendarPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <controls:NavigationBar />
+        <Grid Grid.Row="1" RowDefinitions="Auto, *" BackgroundColor="{StaticResource BackgroundGray}">
+            <cal:Calendar
+                x:Name="calendar"
+                VerticalOptions="Fill"
+                BackgroundColor="{StaticResource PinButtonBackgroundColor}"
+                Culture="{Binding CalendarCulture}"
+                Events="{Binding Events}"
+                DaysTitleLabelFirstUpperRestLower="True"
+                EventsScrollViewVisible="True"
+                DayViewFontSize="16"
+                DayViewSize="30"
+                DaysTitleColor="White"
+                EventIndicatorColor="Yellow"
+                EventIndicatorSelectedTextColor="White"
+                EventIndicatorTextColor="White"
+                TodayTextColor="White"
+                OtherMonthDayColor="SteelBlue"
+                OtherMonthDayIsVisible="True"
+                WeekendDayColor="Yellow"
+                FirstDayOfWeek="Monday"
+                DeselectedDayTextColor="White"
+                DaysTitleWeekendColor="Red"
+                DaysTitleLabelStyle="{StaticResource CalendarDaysLabelStyle}">
+                <cal:Calendar.HeaderSectionTemplate>
+                    <DataTemplate>
+                        <controls:DefaultCalendarHeader />
+                    </DataTemplate>
+                </cal:Calendar.HeaderSectionTemplate>
+                <cal:Calendar.EventTemplate>
+                    <DataTemplate x:DataType="models:EventModel">
+                        <Border 
+                            Style="{StaticResource BorderStyle}"
+                            BackgroundColor="{Binding MemberColor}" >
+                            <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="{Binding Name}" Style="{StaticResource BoldHandwrittenLabelStyle}" FontSize="22"/>
+                                <Label Text="{Binding Description}" Style="{StaticResource RegularHandwrittenLabelStyle}"/>
+                                <Label Text="{Binding TimeFormatted}" Style="{StaticResource RegularHandwrittenLabelStyle}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </cal:Calendar.EventTemplate>
+            </cal:Calendar>
+        </Grid>
+    </Grid>
+</ContentPage>

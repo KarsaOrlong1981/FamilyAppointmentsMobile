@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:FamilyAppointmentsMobile.Controls"
+             xmlns:vm="clr-namespace:FamilyAppointmentsMobile.ViewModels" 
+             xmlns:models="clr-namespace:FamilyAppointmentsMobile.Models"
+             x:DataType="vm:MainDetailsPageViewModel"
+             x:Name="MainDetails"
+             x:Class="FamilyAppointmentsMobile.Pages.MainDetailsPage"
+             Title="MainDetailsPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <controls:NavigationBar />
+        <Grid Grid.Row="1" RowDefinitions="Auto, *" BackgroundColor="{StaticResource BackgroundGray}">
+            <VerticalStackLayout Spacing="8">
+                <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <controls:DefaultEffectButton 
+                        ButtonText="Alle" 
+                        WidthRequest="100" 
+                        HeightRequest="45" 
+                        Command="{Binding ChangeLayoutCommand}" 
+                        CommandParameter="{x:Static models:ELayoutType.All}"/>
+                    <controls:DefaultEffectButton 
+                        ButtonText="+" 
+                        WidthRequest="50" 
+                        HeightRequest="45" 
+                        Command="{Binding AddAppointmentCommand}" 
+                        CommandParameter="{Binding CurrentFamilyMember.Name}"/>
+                    <controls:DefaultEffectButton 
+                        ButtonText="Heute" 
+                        WidthRequest="100" 
+                        HeightRequest="45" 
+                        Command="{Binding ChangeLayoutCommand}" 
+                        CommandParameter="{x:Static models:ELayoutType.Today}"/>
+                </HorizontalStackLayout>
+                <!-- All -->
+                <CollectionView 
+                    Margin="8"
+                    IsVisible="{Binding LayoutType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=All}"
+                    VerticalOptions="Fill"
+                    HorizontalOptions="Fill"
+                    SelectionMode="Single"
+                    SelectedItem="{Binding SelectedAppointmentGeneral}"
+                    SelectionChangedCommand="{Binding SelectedAppointmentCommand}"
+                    ItemsSource="{Binding CurrentFamilyMember.Appointments}" >
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout 
+                          Orientation="Vertical"
+                          Span="2" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Appointment">
+                            <Border 
+                                  Margin="4"
+                                  Style="{StaticResource BorderStyle}"
+                                  BackgroundColor="{Binding Source={x:Reference MainDetails}, Path=BindingContext.CurrentFamilyMember.MemberColor}">
+                                <VerticalStackLayout Spacing="10" Margin="20" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label Text="{Binding Description}" Style="{StaticResource RegularHandwrittenLabelStyle}" />
+                                    <Label Text="{Binding AppointmentDay}" Style="{StaticResource BoldHandwrittenLabelStyle}"/>
+                                    <Label Text="{Binding FormattedDate}" Style="{StaticResource RegularHandwrittenLabelStyle}" />
+                                    <Label Text="{Binding TimeFormatted}" Style="{StaticResource RegularHandwrittenLabelStyle}" />
+                                </VerticalStackLayout>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Normal"></VisualState>
+                                        <VisualState Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="#11000000"></Setter>
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                
+                <!-- Today -->
+                <CollectionView 
+                    Margin="8"
+                    IsVisible="{Binding LayoutType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Today}"
+                    VerticalOptions="Fill"
+                    HorizontalOptions="Fill"
+                    SelectionMode="Single"
+                    SelectedItem="{Binding SelectedAppointmentGeneral}"
+                    SelectionChangedCommand="{Binding SelectedAppointmentCommand}"
+                    ItemsSource="{Binding CurrentFamilyMember.AppointmentsToday}" >
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout 
+                          Orientation="Vertical"
+                          Span="2" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Appointment">
+                            <Border 
+                                Margin="4"
+                                Style="{StaticResource BorderStyle}"
+                                BackgroundColor="{Binding Source={x:Reference MainDetails}, Path=BindingContext.CurrentFamilyMember.MemberColor}">
+                                <VerticalStackLayout Spacing="10" Margin="20" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label Text="{Binding Description}" Style="{StaticResource RegularHandwrittenLabelStyle}" />
+                                    <Label Text="{Binding AppointmentDay}" Style="{StaticResource BoldHandwrittenLabelStyle}"/>
+                                    <Label Text="{Binding FormattedDate}" Style="{StaticResource RegularHandwrittenLabelStyle}" />
+                                    <Label Text="{Binding TimeFormatted}" Style="{StaticResource RegularHandwrittenLabelStyle}" />
+                                </VerticalStackLayout>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Normal"></VisualState>
+                                        <VisualState Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="#11000000"></Setter>
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

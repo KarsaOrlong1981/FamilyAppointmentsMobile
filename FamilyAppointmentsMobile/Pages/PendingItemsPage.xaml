@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:FamilyAppointmentsMobile.Controls"
+             xmlns:vm="clr-namespace:FamilyAppointmentsMobile.ViewModels" 
+             xmlns:models="clr-namespace:FamilyAppointmentsMobile.Models"
+             x:DataType="vm:PendingItemsViewModel"
+             x:Class="FamilyAppointmentsMobile.Pages.PendingItemsPage"
+             Title="PendingItemsPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <controls:NavigationBar />
+        <Grid Grid.Row="1" RowDefinitions="Auto, *" BackgroundColor="{StaticResource BackgroundGray}">
+            <CollectionView 
+                  Margin="8"
+                  VerticalOptions="Fill"
+                  HorizontalOptions="Fill"
+                  SelectionMode="Single"
+                  SelectedItem="{Binding SelectedPendingItem}"
+                  SelectionChangedCommand="{Binding SelectedPendingAppointmentCommand}"
+                  ItemsSource="{Binding PendingAppointments}" >
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout 
+                      Orientation="Vertical"
+                      Span="2" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:PendingAppointment">
+                        <Border 
+                          Margin="4"
+                          Style="{StaticResource BorderStyle}"
+                          BackgroundColor="{Binding Color}">
+                            <VerticalStackLayout Spacing="10" Margin="20" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Text="{Binding OperationTypeFormat}" Style="{StaticResource BoldLabelStyle}" />
+                                <Label Text="{Binding Description}" Style="{StaticResource RegularHandwrittenLabelStyle}" />
+                                <Label Text="{Binding AppointmentDay}" Style="{StaticResource BoldHandwrittenLabelStyle}"/>
+                                <Label Text="{Binding FormattedDate}" Style="{StaticResource RegularHandwrittenLabelStyle}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </Grid>
+</ContentPage>
