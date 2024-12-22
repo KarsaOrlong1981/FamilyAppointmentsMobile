@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
+using FamilyAppointmentsMobile.Models;
 
 namespace FamilyAppointmentsMobile.ViewModels
 {
@@ -13,6 +14,7 @@ namespace FamilyAppointmentsMobile.ViewModels
         private bool canGoBack = true;
         [ObservableProperty]
         private bool isConnected;
+        [ObservableProperty] private EConnectionType connectionType;
 
         private IShellNavigationService shellNavigationService;
         private IConnectionService connectionService;
@@ -32,9 +34,10 @@ namespace FamilyAppointmentsMobile.ViewModels
             Title = e;
         }
 
-        private void ConnectionService_ConnectionChanged(object? sender, bool e)
+        private void ConnectionService_ConnectionChanged(object? sender, EConnectionType e)
         {
-            IsConnected = e;
+            IsConnected = e != EConnectionType.NotConnected;
+            ConnectionType = e;
         }
 
         private void ShellNavigationService_NavigationChanged(object? sender, ShellNavigatedEventArgs e)
@@ -47,6 +50,10 @@ namespace FamilyAppointmentsMobile.ViewModels
         private async Task ConnectLocal()
         {        
             IsConnected = await connectionService.LocalConnection();
+            if (IsConnected) 
+                ConnectionType = EConnectionType.Local;
+            else
+                ConnectionType = EConnectionType.NotConnected;
         }
 
         private string GetPageTitle(string locationUri)

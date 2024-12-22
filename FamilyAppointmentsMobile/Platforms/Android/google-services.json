@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "898356465096",
+    "project_id": "fir-notificationsservice",
+    "storage_bucket": "fir-notificationsservice.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:898356465096:android:149e61725461d2f2a384fd",
+        "android_client_info": {
+          "package_name": "com.companyname.familyappointmentsmobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqGNQOX3GyUptif55YPojq0Xfp85z76T8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

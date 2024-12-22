@@ -29,12 +29,12 @@ namespace FamilyAppointmentsMobile.Services
             try
             {
                 var success = false;
-
-                if (_httpClient == null)
-                {
-                    _httpClient = new HttpClient { BaseAddress = new Uri("http://192.168.1.55:6062") };
-                }
-                success = await IsTCPServiceAvailable(6062);
+               
+                ////if (_httpClient == null)
+                ////{
+                //    _httpClient = new HttpClient { BaseAddress = new Uri("http://192.168.1.55:6062") };
+                ////}
+                //success = await IsTCPServiceAvailable(6062);
                 return success;
             }
             catch(Exception ex)
@@ -42,7 +42,32 @@ namespace FamilyAppointmentsMobile.Services
                 return false;
             }
         }
-       
+
+        public async Task<bool> ConnectToCloud()
+        {
+            try
+            {
+                var success = false;
+                //https://firestoreiotappointmentsservice-production.up.railway.app/api/appointments/ping
+                //if (_httpClient == null)
+                //{
+                _httpClient = new HttpClient { BaseAddress = new Uri("https://firestoreiotappointmentsservice-production.up.railway.app") };
+                var response = await _httpClient.GetAsync("api/Appointments/ping");
+                response.EnsureSuccessStatusCode();
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    success = true;
+                }
+                //}
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
         private Task<bool> IsTCPServiceAvailable(int port)
         {
             try
@@ -297,6 +322,32 @@ namespace FamilyAppointmentsMobile.Services
         {
             //logger.Info("Disposed.");
             _httpClient.Dispose();
+        }
+
+        public async Task<bool> RegisterOrUpdateClient(Clients client)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(client);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("api/Client", content);
+                if (response.IsSuccessStatusCode)
+                {                 
+                    return true;
+                }
+
+                return false;
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public void OnAppointmentsChanged(Appointment appointment)
+        {
+            AppointmentsChanged?.Invoke(this, appointment);
         }
     }
 }

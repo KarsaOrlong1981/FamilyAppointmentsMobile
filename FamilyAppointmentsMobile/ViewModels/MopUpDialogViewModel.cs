@@ -127,16 +127,16 @@ namespace FamilyAppointmentsMobile.ViewModels
                 var combinedDateTime = Date.Value.Date + Time;
                 var appointmentEvent = new Appointment(description: EventText, date: combinedDateTime, member: Member, id: Guid.NewGuid().ToString());
 
-                if (connectionService.IsConnected)
-                {
+                //if (connectionService.IsConnected)
+                //{
                     await restClientService.AddAppointmentAsync(appointmentEvent);
-                }
-                else
-                {
-                    await databasePendingItems.SavePendingOperationAsync(appointmentEvent, EPendingOperationType.Add);
-                    await dialogService.ShowMopupDialog(EMopUpType.Message, "Nicht Verbunden !!!", "Der neue Eintrag wurde nun zwichen gespeichert und wird erst hinzugefügt wenn die Verbindung wieder hergestellt wurde.");
-                    connectionService.OnPendingItemsChanged(true);
-                }
+                //}
+                //else
+                //{
+                //    await databasePendingItems.SavePendingOperationAsync(appointmentEvent, EPendingOperationType.Add);
+                //    await dialogService.ShowMopupDialog(EMopUpType.Message, "Nicht Verbunden !!!", "Der neue Eintrag wurde nun zwichen gespeichert und wird erst hinzugefügt wenn die Verbindung wieder hergestellt wurde.");
+                //    connectionService.OnPendingItemsChanged(true);
+                //}
 
                 result.SetResult(false);
                 await popupNavigation.PopAllAsync();
@@ -203,21 +203,21 @@ namespace FamilyAppointmentsMobile.ViewModels
                 Appointment.Description = EventText;
                 Appointment.Date = Date.Value.Date + Time;
 
-                if (connectionService.IsConnected)
-                {
+                //if (connectionService.IsConnected)
+                //{
                     await restClientService.UpdateAppointmentAsync(Appointment);
-                }
-                else if (!isPendingItem)
-                {
-                    await databasePendingItems.SavePendingOperationAsync(Appointment, EPendingOperationType.Update);
-                    await dialogService.ShowMopupDialog(EMopUpType.Message, "Nicht Verbunden !!!", "Die Überarbeitung wurde nun zwichen gespeichert und wird erst aktuallisiert wenn die Verbindung wieder hergestellt wurde.");
-                    connectionService.OnPendingItemsChanged(true);
-                }
-                else if (isPendingItem)
-                {
-                    // update database item
-                    await databasePendingItems.UpdateByAppointmentIdAsync(Appointment.Id, Appointment);
-                }
+                //}
+                //else if (!isPendingItem)
+                //{
+                //    await databasePendingItems.SavePendingOperationAsync(Appointment, EPendingOperationType.Update);
+                //    await dialogService.ShowMopupDialog(EMopUpType.Message, "Nicht Verbunden !!!", "Die Überarbeitung wurde nun zwichen gespeichert und wird erst aktuallisiert wenn die Verbindung wieder hergestellt wurde.");
+                //    connectionService.OnPendingItemsChanged(true);
+                //}
+                //else if (isPendingItem)
+                //{
+                //    // update database item
+                //    await databasePendingItems.UpdateByAppointmentIdAsync(Appointment.Id, Appointment);
+                //}
 
                 result.SetResult(false);
                 await popupNavigation.PopAllAsync();
@@ -234,25 +234,25 @@ namespace FamilyAppointmentsMobile.ViewModels
         {
             try
             {
-                if (connectionService.IsConnected)
-                {
+                //if (connectionService.IsConnected)
+                //{
                     var res = await dialogService.ShowMopupDialog(EMopUpType.YesNo, "Achtung !!!", "Sicher das dieser Eintrag gelöscht werden soll?");
 
                     if (res)
                     {
                         await restClientService.DeleteAppointmentAsync(Appointment.Id);
                     }
-                }
-                else if (!isPendingItem)
-                {
-                    await databasePendingItems.SavePendingOperationAsync(Appointment, EPendingOperationType.Remove);
-                    await dialogService.ShowMopupDialog(EMopUpType.Message, "Nicht Verbunden !!!", "Der gelöschte Eintrag wird nun zwichen gespeichert und erst entfernt wenn die Verbindung wieder hergestellt wurde.");
-                    connectionService.OnPendingItemsChanged(true);
-                }
-                else if (isPendingItem)
-                {
-                    await databasePendingItems.DeleteByAppointmentIdAsync(Appointment.Id);
-                }
+                //}
+                //else if (!isPendingItem)
+                //{
+                //    await databasePendingItems.SavePendingOperationAsync(Appointment, EPendingOperationType.Remove);
+                //    await dialogService.ShowMopupDialog(EMopUpType.Message, "Nicht Verbunden !!!", "Der gelöschte Eintrag wird nun zwichen gespeichert und erst entfernt wenn die Verbindung wieder hergestellt wurde.");
+                //    connectionService.OnPendingItemsChanged(true);
+                //}
+                //else if (isPendingItem)
+                //{
+                //    await databasePendingItems.DeleteByAppointmentIdAsync(Appointment.Id);
+                //}
                 result.SetResult(false);
                 await popupNavigation.PopAllAsync();
             }

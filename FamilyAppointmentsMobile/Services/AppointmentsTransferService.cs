@@ -55,44 +55,44 @@ namespace FamilyAppointmentsMobile.Services
             }
         }
 
-        private async void ConnectionService_ConnectionChanged(object? sender, bool e)
+        private async void ConnectionService_ConnectionChanged(object? sender, EConnectionType e)
         {
             if (!await _connectionSemaphore.WaitAsync(0))
                 return;
 
             try
             {
-                isConnected = e;
+                isConnected = e != EConnectionType.NotConnected;
 
-                if (isConnected)
-                {
-                    var pendingAppointments = await databasePendingItems.GetAllPendingOperationsAsync();
-                    if (pendingAppointments != null && pendingAppointments.Count > 0)
-                    {
-                        foreach (var appointment in pendingAppointments)
-                        {
-                            if (appointment.PendingOperationType == EPendingOperationType.Add)
-                            {
-                                var newAppointment = new Appointment(description: appointment.Description, date: appointment.Date, member: appointment.Member, id: Guid.NewGuid().ToString());
-                                await client.AddAppointmentAsync(newAppointment);
-                            }
-                            else if (appointment.PendingOperationType == EPendingOperationType.Update)
-                            {
-                                var updatedAppointment = new Appointment(description: appointment.Description, date: appointment.Date, member: appointment.Member, id: appointment.AppointmentId);
-                                await client.UpdateAppointmentAsync(updatedAppointment);
-                            }
-                            else if (appointment.PendingOperationType == EPendingOperationType.Remove)
-                            {
-                                await client.DeleteAppointmentAsync(appointment.AppointmentId);
-                            }
-                        }
-                        await databasePendingItems.DeleteAllPendingOperationsAsync();
-                        PendingAppointments.Clear();
-                        connectionService.OnPendingItemsChanged(false);
-                        await LoadAppointments();
-                    }
-                }
-                else
+                //if (isConnected)
+                //{
+                    //var pendingAppointments = await databasePendingItems.GetAllPendingOperationsAsync();
+                    //if (pendingAppointments != null && pendingAppointments.Count > 0)
+                    //{
+                    //    foreach (var appointment in pendingAppointments)
+                    //    {
+                    //        if (appointment.PendingOperationType == EPendingOperationType.Add)
+                    //        {
+                    //            var newAppointment = new Appointment(description: appointment.Description, date: appointment.Date, member: appointment.Member, id: Guid.NewGuid().ToString());
+                    //            await client.AddAppointmentAsync(newAppointment);
+                    //        }
+                    //        else if (appointment.PendingOperationType == EPendingOperationType.Update)
+                    //        {
+                    //            var updatedAppointment = new Appointment(description: appointment.Description, date: appointment.Date, member: appointment.Member, id: appointment.AppointmentId);
+                    //            await client.UpdateAppointmentAsync(updatedAppointment);
+                    //        }
+                    //        else if (appointment.PendingOperationType == EPendingOperationType.Remove)
+                    //        {
+                    //            await client.DeleteAppointmentAsync(appointment.AppointmentId);
+                    //        }
+                    //    }
+                    //    await databasePendingItems.DeleteAllPendingOperationsAsync();
+                    //    PendingAppointments.Clear();
+                    //    connectionService.OnPendingItemsChanged(false);
+                //        await LoadAppointments();
+                //    }
+                //}
+                //else
                     await LoadAppointments();
             }
             catch (Exception ex)
@@ -125,20 +125,20 @@ namespace FamilyAppointmentsMobile.Services
             {
                 List<Appointment> allAppointments;
 
-                if (connectionService.IsConnected)
-                {
+                //if (connectionService.IsConnected)
+                //{
                     allAppointments = await client.GetAllAppointmentsAsync() ?? new List<Appointment>();
 
                     // Save appointments locally
-                    await databaseLocalItems.SaveAllAppointmentsAsync(allAppointments);
-                }
-                else
-                {
-                    var localAppointments = await databaseLocalItems.GetAllLocalAppointmentsAsync();
-                    allAppointments = localAppointments
-                        .Select(local => new Appointment(local.Description, local.Date, local.Member, local.AppointmentId))
-                        .ToList();
-                }
+                    //await databaseLocalItems.SaveAllAppointmentsAsync(allAppointments);
+                //}
+                //else
+                //{
+                //    var localAppointments = await databaseLocalItems.GetAllLocalAppointmentsAsync();
+                //    allAppointments = localAppointments
+                //        .Select(local => new Appointment(local.Description, local.Date, local.Member, local.AppointmentId))
+                //        .ToList();
+                //}
 
                 // Process appointments
                 if (allAppointments.Any())

@@ -2,6 +2,7 @@
 using Android.Util;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using FamilyAppointmentsMobile.Database;
+using FamilyAppointmentsMobile.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace FamilyAppointmentsMobile.Services
 
         public bool IsConnected {  get; private set; }
 
-        public event EventHandler<bool> ConnectionChanged;
+        public event EventHandler<EConnectionType> ConnectionChanged;
         public event EventHandler<bool> PendingItemsChanged;
 
         public ConnectionService()
@@ -28,19 +29,23 @@ namespace FamilyAppointmentsMobile.Services
         public async Task<bool> LocalConnection()
         {
             var success = false;
+            var connectionType = EConnectionType.NotConnected;
             try
             {
                 success = await _restClientService.ConnectToRestService();
                 IsConnected = success;
+                if (success) 
+                    connectionType = EConnectionType.Local;
                 return success;
             }
-            catch
+            catch(Exception ex) 
             {
+                connectionType = EConnectionType.NotConnected;
                 return false;
             }
             finally
             {
-                ConnectionChanged?.Invoke(this, success);
+                ConnectionChanged?.Invoke(this, connectionType);
             }
         }
 
@@ -50,22 +55,56 @@ namespace FamilyAppointmentsMobile.Services
 
             if (access == Microsoft.Maui.Networking.NetworkAccess.Internet)
             {
-                var succes = await _restClientService.ConnectToRestService();
-                IsConnected = succes;
-                ConnectionChanged?.Invoke(this, succes);
-                //await HandleNetworkChanged(succes);
+                //var localConnection = await _restClientService.ConnectToRestService();
+                ////IsConnected = localConnection;
+                //if (localConnection)
+                //{
+                //    IsConnected = true;
+                //    ConnectionChanged?.Invoke(this, EConnectionType.Local);
+                //}
+                //else
+                //{
+                    var cloudConnection = await _restClientService.ConnectToCloud();
+                    if (cloudConnection)
+                    {
+                        IsConnected = true;
+                        ConnectionChanged?.Invoke(this, EConnectionType.Cloud);
+                    }
+                //}
             }
             else
             {
                 IsConnected = false;
-                ConnectionChanged?.Invoke(this, false);
-                //Disconnect();
+                ConnectionChanged?.Invoke(this, EConnectionType.NotConnected);
             }
         }
 
         public void OnPendingItemsChanged(bool pendingItemsChanged)
         {
             PendingItemsChanged?.Invoke(this, pendingItemsChanged);
+        }
+
+        public async Task<bool> CloudConnection()
+        {
+            var connectionType = EConnectionType.NotConnected;
+            try
+            {
+                var succes = await _restClientService.ConnectToCloud();
+                IsConnected = succes;
+                if (succes)
+                    connectionType = EConnectionType.Cloud;
+                return succes;
+            }
+            catch (Exception ex) 
+            {
+                connectionType = EConnectionType.NotConnected;
+                return false;
+            }
+            finally
+            {
+                ConnectionChanged?.Invoke(this, connectionType);
+            }
+
         }
     }
 }

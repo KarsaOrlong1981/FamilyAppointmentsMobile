@@ -72,9 +72,18 @@ namespace FamilyAppointmentsMobile.ViewModels
             {
                 DispatcherHelper.CheckBeginInvokeOnUI(async () =>
                 {
-                    await connectionService.LocalConnection();
+                    //var localConnection = await connectionService.LocalConnection();
+                    //if (!localConnection)
+                    //{
+                        var cloudConnection = await connectionService.CloudConnection();
+                        if (!cloudConnection)
+                        {
+
+                        }
+                    //}
+                    
                     await appointmentsTransferService.LoadAppointments();
-                    await appointmentsTransferService.CheckForDeques();
+                    //await appointmentsTransferService.CheckForDeques();
                 });
             }
             catch (Exception ex) 
@@ -88,9 +97,9 @@ namespace FamilyAppointmentsMobile.ViewModels
             HasPendingItems = e;
         }
 
-        private void ConnectionService_ConnectionChanged(object? sender, bool connected)
-        { 
-             //appointmentsTransferService.LoadAppointments();
+        private void ConnectionService_ConnectionChanged(object? sender, EConnectionType connectionType)
+        {
+            appointmentsTransferService.LoadAppointments();
         }
 
         private void Client_AppointmentsChanged(object? sender, Appointment e)

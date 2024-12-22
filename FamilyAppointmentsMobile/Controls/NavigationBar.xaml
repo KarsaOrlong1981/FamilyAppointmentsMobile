@@ -37,18 +37,24 @@
                 HeightRequest="35" 
                 Command="{Binding RefreshCommand}"/>
             <controls:ImageButtonPressed 
-                IsVisible="{Binding IsConnected, Converter={StaticResource BoolInvertedConverter}}"
+                IsVisible="{Binding ConnectionType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=NotConnected}"
                 ImageSource="disconnected.png"
                 Command="{Binding ConnectLocalCommand}"
                 Margin="0,0,8,0"
                 HeightRequest="35" 
                 WidthRequest="35"/>
             <controls:ImageButtonPressed 
-                IsVisible="{Binding IsConnected}"
+                IsVisible="{Binding ConnectionType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Local}"
                 ImageSource="connected.png"
                 Margin="0,0,8,0" 
                 HeightRequest="38" 
                 WidthRequest="38"/>
+            <controls:ImageButtonPressed 
+                IsVisible="{Binding ConnectionType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Cloud}"
+                ImageSource="cloud.png"
+                Margin="0,0,8,0"
+                HeightRequest="35" 
+                WidthRequest="35"/>
         </HorizontalStackLayout>
     </Grid>
 </ContentView>

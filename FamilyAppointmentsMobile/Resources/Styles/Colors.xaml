@@ -5,9 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <Color x:Key="JoergColor">#934682B4</Color>
-    <Color x:Key="KarinColor">#939ACD32</Color>
+    <Color x:Key="KarinColor">#FF9ACD32</Color>
     <Color x:Key="MarvinColor">#9300FA9A</Color>
-    <Color x:Key="LioColor">#93FFD700</Color>
+    <Color x:Key="LioColor">#FFFFD700</Color>
     <Color x:Key="LightGrayColor">#d1d1d1</Color>
     <Color x:Key="BackgroundGray">#393939</Color>
     <Color x:Key="PinTextColor">#FFFFFF</Color>
