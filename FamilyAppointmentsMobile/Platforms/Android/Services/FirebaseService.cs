@@ -44,8 +44,6 @@ namespace FamilyAppointmentsMobile.Platforms.Droid.Services
             base.OnMessageReceived(message);
             var notification = message.GetNotification();
             SendNotification(notification.Body, notification.Title, message.Data);
-            _restClientService.OnAppointmentsChanged(null);
-            _restClientService.OnTodosChanged();
         }
 
         private void SendNotification(string messageBody, string title, IDictionary<string, string> data)
