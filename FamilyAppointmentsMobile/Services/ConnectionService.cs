@@ -3,6 +3,7 @@ using Android.Util;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using FamilyAppointmentsMobile.Database;
 using FamilyAppointmentsMobile.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace FamilyAppointmentsMobile.Services
 {
     public class ConnectionService : IConnectionService
     {
+        private readonly ILogger<ConnectionService> log;
         private readonly IRestClientService _restClientService;
 
         public bool IsConnected {  get; private set; }
@@ -22,6 +24,7 @@ namespace FamilyAppointmentsMobile.Services
 
         public ConnectionService()
         {
+            log = Ioc.Default.GetService<ILogger<ConnectionService>>();
             _restClientService = Ioc.Default.GetService<IRestClientService>();
             Connectivity.ConnectivityChanged += OnConnectionChanged;
         }
@@ -40,6 +43,7 @@ namespace FamilyAppointmentsMobile.Services
             }
             catch(Exception ex) 
             {
+                log.LogInformation("Cannot connect locally");
                 connectionType = EConnectionType.NotConnected;
                 return false;
             }
@@ -55,22 +59,13 @@ namespace FamilyAppointmentsMobile.Services
 
             if (access == Microsoft.Maui.Networking.NetworkAccess.Internet)
             {
-                //var localConnection = await _restClientService.ConnectToRestService();
-                ////IsConnected = localConnection;
-                //if (localConnection)
-                //{
-                //    IsConnected = true;
-                //    ConnectionChanged?.Invoke(this, EConnectionType.Local);
-                //}
-                //else
-                //{
-                    var cloudConnection = await _restClientService.ConnectToCloud();
-                    if (cloudConnection)
-                    {
-                        IsConnected = true;
-                        ConnectionChanged?.Invoke(this, EConnectionType.Cloud);
-                    }
-                //}
+                
+                var cloudConnection = await _restClientService.ConnectToCloud();
+                if (cloudConnection)
+                {
+                    IsConnected = true;
+                    ConnectionChanged?.Invoke(this, EConnectionType.Cloud);
+                }
             }
             else
             {
@@ -97,6 +92,7 @@ namespace FamilyAppointmentsMobile.Services
             }
             catch (Exception ex) 
             {
+                log.LogInformation("Cannot connect to cloud.");
                 connectionType = EConnectionType.NotConnected;
                 return false;
             }
@@ -104,7 +100,6 @@ namespace FamilyAppointmentsMobile.Services
             {
                 ConnectionChanged?.Invoke(this, connectionType);
             }
-
         }
     }
 }

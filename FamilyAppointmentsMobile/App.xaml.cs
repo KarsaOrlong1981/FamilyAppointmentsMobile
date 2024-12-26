@@ -1,5 +1,4 @@
 ﻿using FamilyAppointmentsMobile.Helpers;
-using FamilyAppointmentsMobile.Services;
 
 namespace FamilyAppointmentsMobile
 {

@@ -2,17 +2,19 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using FamilyAppointmentsMobile.Database;
 using FamilyAppointmentsMobile.Models;
+using Microsoft.Extensions.Logging;
 using Plugin.Maui.Calendar.Models;
 using System.Collections.ObjectModel;
-using static Android.Provider.CalendarContract;
 
 namespace FamilyAppointmentsMobile.Services
 {
     public class AppointmentsTransferService : IAppointmentsTransferService
     {
+        private readonly ILogger<AppointmentsTransferService> log;
         private IRestClientService client;
         private IConnectionService connectionService;
         private readonly SemaphoreSlim _initSemaphore = new(1, 1);
+        private readonly SemaphoreSlim _initSemaphoreTodos = new(1, 1);
         private DatabasePendingItems databasePendingItems;
         private DatabaseLocalItems databaseLocalItems;
         private readonly SemaphoreSlim _connectionSemaphore = new(1, 1);
@@ -21,12 +23,16 @@ namespace FamilyAppointmentsMobile.Services
         public FamilyMember CurrentFamilyMember { get; set; }
         public ObservableCollection<FamilyMember> CurrentFamilyMembers { get; set; }
         public ObservableCollection<PendingAppointment> PendingAppointments { get; set; }
+        public ObservableCollection<TodoList> TodoLists { get; set; }
 
         public bool HasPendingItems {  get; private set; }
         public EventCollection Events { get; private set; }
+        public TodoList CurrentTodoList { get; set; }
 
         public AppointmentsTransferService()
         {
+            log = Ioc.Default.GetService<ILogger<AppointmentsTransferService>>();
+            log.LogInformation("Transfer service is init.");
             client = Ioc.Default.GetService<IRestClientService>();
             connectionService = Ioc.Default.GetService<IConnectionService>();
             databasePendingItems = new DatabasePendingItems();
@@ -63,41 +69,13 @@ namespace FamilyAppointmentsMobile.Services
             try
             {
                 isConnected = e != EConnectionType.NotConnected;
-
-                //if (isConnected)
-                //{
-                    //var pendingAppointments = await databasePendingItems.GetAllPendingOperationsAsync();
-                    //if (pendingAppointments != null && pendingAppointments.Count > 0)
-                    //{
-                    //    foreach (var appointment in pendingAppointments)
-                    //    {
-                    //        if (appointment.PendingOperationType == EPendingOperationType.Add)
-                    //        {
-                    //            var newAppointment = new Appointment(description: appointment.Description, date: appointment.Date, member: appointment.Member, id: Guid.NewGuid().ToString());
-                    //            await client.AddAppointmentAsync(newAppointment);
-                    //        }
-                    //        else if (appointment.PendingOperationType == EPendingOperationType.Update)
-                    //        {
-                    //            var updatedAppointment = new Appointment(description: appointment.Description, date: appointment.Date, member: appointment.Member, id: appointment.AppointmentId);
-                    //            await client.UpdateAppointmentAsync(updatedAppointment);
-                    //        }
-                    //        else if (appointment.PendingOperationType == EPendingOperationType.Remove)
-                    //        {
-                    //            await client.DeleteAppointmentAsync(appointment.AppointmentId);
-                    //        }
-                    //    }
-                    //    await databasePendingItems.DeleteAllPendingOperationsAsync();
-                    //    PendingAppointments.Clear();
-                    //    connectionService.OnPendingItemsChanged(false);
-                //        await LoadAppointments();
-                //    }
-                //}
-                //else
-                    await LoadAppointments();
+                
+                await LoadAppointments();
+                await LoadTodos();
             }
             catch (Exception ex)
             {
-
+                log.LogError(ex, "Error on connection changed while loading data from Cloud.");
             }
             finally
             {
@@ -125,20 +103,7 @@ namespace FamilyAppointmentsMobile.Services
             {
                 List<Appointment> allAppointments;
 
-                //if (connectionService.IsConnected)
-                //{
-                    allAppointments = await client.GetAllAppointmentsAsync() ?? new List<Appointment>();
-
-                    // Save appointments locally
-                    //await databaseLocalItems.SaveAllAppointmentsAsync(allAppointments);
-                //}
-                //else
-                //{
-                //    var localAppointments = await databaseLocalItems.GetAllLocalAppointmentsAsync();
-                //    allAppointments = localAppointments
-                //        .Select(local => new Appointment(local.Description, local.Date, local.Member, local.AppointmentId))
-                //        .ToList();
-                //}
+                allAppointments = await client.GetAllAppointmentsAsync() ?? new List<Appointment>();
 
                 // Process appointments
                 if (allAppointments.Any())
@@ -150,7 +115,7 @@ namespace FamilyAppointmentsMobile.Services
             }
             catch (Exception ex)
             {
-                // logger.Error(ex, "Failed to load appointments");
+                log.LogError(ex, "Failed to load appointments");
             }
             finally
             {
@@ -214,7 +179,7 @@ namespace FamilyAppointmentsMobile.Services
             }
             catch (Exception ex)
             {
-                //logger.Error(ex, "Failed to load appointments");
+                log.LogError(ex, "Failed to load appointments");
             }
         }
 
@@ -239,6 +204,40 @@ namespace FamilyAppointmentsMobile.Services
             }
 
             return events;
+        }
+
+        public async Task LoadTodos()
+        {
+            await _initSemaphoreTodos.WaitAsync();
+            try
+            {
+                List<Appointment> allAppointments;
+
+                var taskList = await client.GetAllTodoListsAsync() ?? new List<TodoList>();
+                TodoLists = taskList.ToObservableCollection();
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, "Failed to load appointments");
+            }
+            finally
+            {
+                _initSemaphoreTodos.Release();
+            }
+        }
+
+        public async Task<TodoList> RefreshCurrentTodoList(string listId)
+        {
+            try
+            {
+                CurrentTodoList = await client.GetTodoListByIdAsync(listId);
+                return CurrentTodoList;
+            }
+            catch (Exception ex) 
+            {
+                log.LogError(ex, "Error on refreshing current todo list.");
+                return null;
+            }
         }
     }
 }

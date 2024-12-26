@@ -3,13 +3,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using FamilyAppointmentsMobile.Models;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyAppointmentsMobile.ViewModels
 {
     public partial class NavigationBarViewModel : ObservableObject
     {
-        [ObservableProperty] private string title;
+        private readonly ILogger<NavigationBarViewModel> log;
 
+        [ObservableProperty] private string title;
         [ObservableProperty]
         private bool canGoBack = true;
         [ObservableProperty]
@@ -18,11 +20,14 @@ namespace FamilyAppointmentsMobile.ViewModels
 
         private IShellNavigationService shellNavigationService;
         private IConnectionService connectionService;
+        private IRestClientService restClientService;
         private IAppointmentsTransferService appointmentsTransferService;
         public NavigationBarViewModel() 
         {
+            log = Ioc.Default.GetService<ILogger<NavigationBarViewModel>>();
             shellNavigationService = Ioc.Default.GetService<IShellNavigationService>();
             connectionService = Ioc.Default.GetService<IConnectionService>();
+            restClientService = Ioc.Default.GetService<IRestClientService>();
             appointmentsTransferService = Ioc.Default.GetService<IAppointmentsTransferService>();
             shellNavigationService.NavigationChanged += ShellNavigationService_NavigationChanged;
             shellNavigationService.NavigationLayoutChanged += ShellNavigationService_NavigationLayoutChanged;
@@ -70,9 +75,9 @@ namespace FamilyAppointmentsMobile.ViewModels
             {
                 result = "Kalender";
             }
-            else if (location == Constants.TodayPage)
+            else if (location == Constants.ListPage)
             {
-                result = "Heute";
+                result = "Listen und Aufgaben";
             }
             else if (location == Constants.PendingItemsPage)
             {
@@ -93,8 +98,12 @@ namespace FamilyAppointmentsMobile.ViewModels
             try
             {
                 await appointmentsTransferService.LoadAppointments();
+                await appointmentsTransferService.LoadTodos();
             }
-            catch (Exception ex) { }
+            catch (Exception ex) 
+            {
+                log.LogError(ex, "Error on refreshing lists from cloud.");
+            }
         }
     }
 }

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FamilyAppointmentsMobile.ViewModels" 
+             xmlns:models="clr-namespace:FamilyAppointmentsMobile.Models"
+             xmlns:controls="clr-namespace:FamilyAppointmentsMobile.Controls"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+             xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+             xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+             x:DataType="vm:ListDetailsPageViewModel"    
+             x:Class="FamilyAppointmentsMobile.Pages.ListDetailPage"
+             x:Name="DetailsPage"
+             Title="TodayDetailsPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <controls:NavigationBar />
+        <ScrollView Grid.Row="1">
+            <Grid  RowDefinitions="Auto, Auto, *, Auto" BackgroundColor="{StaticResource BackgroundGray}">
+                <VerticalStackLayout>
+                    <!-- Buttons -->
+                    <HorizontalStackLayout HorizontalOptions="Center" Margin="8" Spacing="8">
+                        <controls:DefaultEffectButton 
+                             ButtonText="+ Neuer Eintrag" 
+                             WidthRequest="150"
+                             HeightRequest="45" 
+                             Command="{Binding AddNewTaskCommand}"/>
+                        <controls:DefaultEffectButton 
+                             ButtonText="Liste Löschen" 
+                             WidthRequest="150"
+                             HeightRequest="45" 
+                             Command="{Binding DeleteListCommand}"/>
+                    </HorizontalStackLayout>
+                    <!-- Benutzerdefinnierter Eintrag zur Liste -->
+                    <HorizontalStackLayout 
+                        IsVisible="{Binding IsAddingActive}"
+                        HorizontalOptions="Center" Spacing="10">
+                        <material:EditorField
+                              MaximumWidthRequest="250"
+                              TextColor="White"
+                              TitleColor="LightGrey" 
+                              HorizontalOptions="Fill" 
+                              Text="{Binding NewEntry}"
+                              Title="Benutzerdefinierter Eintrag zur Liste"
+                              IsSpellCheckEnabled="False"
+                              AccentColor="SteelBlue">
+                            <material:EditorField.Behaviors>
+                                <toolkit:EventToCommandBehavior
+                                     EventName="TextChanged" 
+                                     Command="{Binding NewEntryChangedCommand}"/>
+                            </material:EditorField.Behaviors>
+                        </material:EditorField>
+                        <controls:DefaultEffectButton 
+                             Margin="0,2,0,0"
+                             IsEnabled="{Binding NewEntryIsValid}"
+                             WidthRequest="50" HeightRequest="48" ButtonText="OK" Command="{Binding AddNewTaskEntryCommand}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+                <!-- Shopping list -->
+                <CollectionView
+                    IsVisible="{Binding IsShoppingList}"
+                    MaximumHeightRequest="600"
+                    Grid.Row="2"
+                    ItemsLayout="VerticalList"
+                    ItemsSource="{Binding TasksGroups}" 
+                    IsGrouped="True">
+                    <CollectionView.GroupHeaderTemplate>
+                        <DataTemplate x:DataType="models:TodoTaskGroup">
+                            <Border Margin="8"  Style="{StaticResource BorderCategoriesGroupStyle}">
+                                <Label Text="{Binding CategorieName}" 
+                                   FontAttributes="Bold"
+                                       FontFamily="RegularRoboto"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center"
+                                   TextColor="Black"
+                                   FontSize="Medium"/>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.GroupHeaderTemplate>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:TodoTask" >
+                            <Grid ColumnDefinitions="50, *, 50" >
+                                <CheckBox 
+                                    x:Name="CheckBoxIsDone"
+                                    Color="{StaticResource KarinColor}"
+                                    HorizontalOptions="Start" 
+                                    VerticalOptions="Center"
+                                    IsChecked="{Binding IsDone}" >
+                                    <CheckBox.Behaviors>
+                                        <toolkit:EventToCommandBehavior
+                                            EventName="CheckedChanged" 
+                                            Command="{Binding BindingContext.CheckedChangedCommand, Source={x:Reference DetailsPage}}"/>
+                                    </CheckBox.Behaviors>
+                                </CheckBox>
+                                <Label 
+                                    Grid.Column="1" 
+                                    FontSize="18"
+                                    Text="{Binding Description}"
+                                    FontFamily="RegularRoboto"
+                                    VerticalOptions="Center" 
+                                    TextColor="White"
+                                    IsVisible="{Binding Source={x:Reference CheckBoxIsDone}, Path=IsChecked, Converter={StaticResource BoolInvertedConverter}}">
+                                </Label>
+
+                                <!-- Durchgestrichenes Label -->
+                                <Label 
+                                    Grid.Column="1" 
+                                    FontSize="18"
+                                    Text="{Binding Description}"
+                                    VerticalOptions="Center" 
+                                    TextColor="White"
+                                    Opacity="0.5"
+                                    TextDecorations="Strikethrough"
+                                    IsVisible="{Binding Source={x:Reference CheckBoxIsDone}, Path=IsChecked}" >
+                                </Label>
+                                <controls:ImageButtonPressed 
+                                    Grid.Column="2"
+                                    VerticalOptions="Center"
+                                    Command="{Binding BindingContext.DeleteTaskCommand, Source={x:Reference DetailsPage}}"
+                                    CommandParameter="{Binding}"
+                                    ImageSource="dark_icon_close_white.png"
+                                    HeightRequest="30" 
+                                    WidthRequest="30" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                
+                <!-- Todo list -->
+                <VerticalStackLayout 
+                    Grid.Row="2"
+                    Spacing="20"
+                    IsVisible="{Binding IsShoppingList, Converter={StaticResource BoolInvertedConverter}}" >
+                    <Border Margin="8"  Style="{StaticResource BorderCategoriesGroupStyle}">
+                        <Label 
+                            Text="{Binding ListName}" 
+                            FontAttributes="Bold"
+                            FontFamily="RegularRoboto"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center"
+                            TextColor="Black"
+                            FontSize="Medium"/>
+                    </Border>
+                    <CollectionView
+                        VerticalOptions="Fill"
+                        ItemsLayout="VerticalList"
+                        ItemsSource="{Binding Tasks}" >
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:TodoTask" >
+                                <Grid ColumnDefinitions="50,*, 50" >
+                                    <CheckBox 
+                                        x:Name="CheckBoxIsDone"
+                                        Color="{StaticResource KarinColor}"
+                                        HorizontalOptions="Start" 
+                                        VerticalOptions="Center"
+                                        IsChecked="{Binding IsDone}" >
+                                        <CheckBox.Behaviors>
+                                            <toolkit:EventToCommandBehavior
+                                                EventName="CheckedChanged" 
+                                                Command="{Binding BindingContext.CheckedChangedCommand, Source={x:Reference DetailsPage}}"/>
+                                        </CheckBox.Behaviors>
+                                    </CheckBox>
+                                    <Label 
+                                        Grid.Column="1" 
+                                        FontSize="18"
+                                        Text="{Binding Description}"
+                                        FontFamily="RegularRoboto"
+                                        VerticalOptions="Center" 
+                                        TextColor="White"
+                                        IsVisible="{Binding Source={x:Reference CheckBoxIsDone}, Path=IsChecked, Converter={StaticResource BoolInvertedConverter}}">
+                                    </Label>
+
+                                    <!-- Durchgestrichenes Label -->
+                                    <Label 
+                                        Grid.Column="1" 
+                                        FontSize="18"
+                                        Text="{Binding Description}"
+                                        VerticalOptions="Center" 
+                                        TextColor="White"
+                                        Opacity="0.5"
+                                        TextDecorations="Strikethrough"
+                                        IsVisible="{Binding Source={x:Reference CheckBoxIsDone}, Path=IsChecked}" >
+                                    </Label>
+                                    <controls:ImageButtonPressed 
+                                        Grid.Column="2"
+                                        VerticalOptions="Center"
+                                        Command="{Binding BindingContext.DeleteTaskCommand, Source={x:Reference DetailsPage}}"
+                                        CommandParameter="{Binding}"
+                                        ImageSource="dark_icon_close_white.png"
+                                        HeightRequest="30" 
+                                        WidthRequest="30" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+                
+                <HorizontalStackLayout Margin="8" Grid.Row="3">
+                    <controls:DefaultEffectButton 
+                        IsEnabled="{Binding HasChanges}"
+                        Command="{Binding SendToCloudCommand}"
+                        ButtonText="An Cloud Senden"
+                        HeightRequest="45" 
+                        WidthRequest="150" />
+                </HorizontalStackLayout>
+            </Grid>
+        </ScrollView>
+    </Grid>
+</ContentPage>

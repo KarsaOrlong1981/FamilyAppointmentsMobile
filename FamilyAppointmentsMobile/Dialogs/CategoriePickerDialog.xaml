@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopups:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FamilyAppointmentsMobile.Dialogs.CategoriePickerDialog"
+             xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"  
+             xmlns:mopupsanim="clr-namespace:Mopups.Animations;assembly=Mopups"
+             xmlns:controls="clr-namespace:FamilyAppointmentsMobile.Controls"
+             xmlns:models="clr-namespace:FamilyAppointmentsMobile.Models"
+             xmlns:vm="clr-namespace:FamilyAppointmentsMobile.ViewModels"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:validation="clr-namespace:InputKit.Shared.Validations;assembly=InputKit.Maui"
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+             xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+             xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+             x:DataType="vm:CategoriePickerDialogViewModel"
+             HideSoftInputOnTapped="True" 
+             CloseWhenBackgroundIsClicked="false"
+             BackgroundColor="#90000000">
+    <mopups:PopupPage.Animation>
+        <mopupsanim:ScaleAnimation
+             DurationIn="700"
+             EasingIn="BounceOut"
+             PositionIn="Bottom"
+             PositionOut="Bottom"
+             ScaleIn="1"
+             ScaleOut="0.8" />
+    </mopups:PopupPage.Animation>
+
+    <Border
+         WidthRequest="350" HeightRequest="500"
+         StrokeThickness="2"
+         Stroke="{StaticResource LightGrayColor}"
+         BackgroundColor="{StaticResource BackgroundGray}">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="10,10,10,10"/>
+        </Border.StrokeShape>
+        <Grid Margin="10" RowDefinitions="Auto,Auto,30,*, 80" >
+            <controls:DefaultEffectButton 
+                ImageSource="dark_icon_close_white.png"
+                HeightRequest="50" WidthRequest="50" 
+                HorizontalOptions="End" 
+                Command="{Binding CloseDialogCommand}"/>
+            <Label 
+                 Grid.Row="1" 
+                 HorizontalOptions="Center"
+                 HorizontalTextAlignment="Center"
+                 Text="Kategorien" 
+                 FontSize="Title" 
+                 FontAttributes="Bold"
+                 TextDecorations="Underline"
+                 TextColor="White" />
+            <CollectionView
+                Grid.Row="3"
+                SelectionMode="Single"
+                ItemSizingStrategy="MeasureFirstItem"
+                ItemsSource="{Binding Categories}"
+                SelectedItem="{Binding PickedItem}"
+                SelectionChangedCommand="{Binding PickedItemChangedCommand}"
+                BackgroundColor="{StaticResource BackgroundGray}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Categorie">
+                        <Border 
+                            Margin="4"
+                            Style="{StaticResource ListCategorieBorderStyle}"
+                            BackgroundColor="{StaticResource BackgroundGray}" >
+                            <Label HeightRequest="50" Text="{Binding Name}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" TextColor="{StaticResource KarinColor}" FontSize="14" Style="{StaticResource BoldHandwrittenLabelStyle}" />
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </Border>
+</mopups:PopupPage>

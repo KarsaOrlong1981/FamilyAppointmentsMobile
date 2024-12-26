@@ -6,8 +6,8 @@ namespace FamilyAppointmentsMobile
     {
         public static readonly string StatusBarColor = "#393939";
         public static readonly string CalendarPage = "CalendarPage";
-        public static readonly string TodayPage = "TodayPage";
-        public static readonly string TodayDetailsPage = "TodayDetailsPage";
+        public static readonly string ListPage = "ListPage";
+        public static readonly string ListDetailsPage = "ListDetailsPage";
         public static readonly string MainDetailsPage = "MainDetailsPage";
         public static readonly string PendingItemsPage = "PendingItemsPage";
         public const string DatabaseFilenamePending = "PendingAppointmentsDatabase.db2";

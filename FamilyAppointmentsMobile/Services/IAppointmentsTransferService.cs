@@ -11,9 +11,13 @@ namespace FamilyAppointmentsMobile.Services
         EventCollection Events { get; }
         ObservableCollection<FamilyMember> CurrentFamilyMembers { get; set; }
         ObservableCollection<PendingAppointment> PendingAppointments { get; set; }
+        ObservableCollection<TodoList> TodoLists { get; set; }
+        TodoList CurrentTodoList { get; set; }
         bool HasPendingItems { get; }
         void LoadAppointmentsToday();
+        Task LoadTodos();
         Task LoadAppointments();
         Task CheckForDeques();
+        Task<TodoList> RefreshCurrentTodoList(string listId);
     }
 }

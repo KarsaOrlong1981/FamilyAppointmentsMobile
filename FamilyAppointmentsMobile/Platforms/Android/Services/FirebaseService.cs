@@ -4,16 +4,19 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using FamilyAppointmentsMobile.Models;
 using FamilyAppointmentsMobile.Services;
 using Firebase.Messaging;
-    
+using Microsoft.Extensions.Logging;
+
 namespace FamilyAppointmentsMobile.Platforms.Droid.Services
 {
     [Service(Exported = true)]
     [IntentFilter(new[] { "com.google.firebase.MESSAGING_EVENT" })]
     public class FirebaseService : FirebaseMessagingService
     {
+        private readonly ILogger<FirebaseService> log;  
         private IRestClientService _restClientService;
         public FirebaseService() 
-        { 
+        {
+            log = Ioc.Default.GetService<ILogger<FirebaseService>>();
             _restClientService = Ioc.Default.GetService<IRestClientService>();
         }
 
@@ -32,7 +35,7 @@ namespace FamilyAppointmentsMobile.Platforms.Droid.Services
             }
             catch (Exception ex)
             {
-
+                log.LogError(ex, "Failed to register new client or updating exsiting.");
             }
         }
 
@@ -42,6 +45,7 @@ namespace FamilyAppointmentsMobile.Platforms.Droid.Services
             var notification = message.GetNotification();
             SendNotification(notification.Body, notification.Title, message.Data);
             _restClientService.OnAppointmentsChanged(null);
+            _restClientService.OnTodosChanged();
         }
 
         private void SendNotification(string messageBody, string title, IDictionary<string, string> data)

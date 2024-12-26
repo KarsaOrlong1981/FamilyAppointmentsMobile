@@ -23,10 +23,11 @@ namespace FamilyAppointmentsMobile.Services
         private void RegisterRoutes()
         {
             Routing.RegisterRoute(Constants.CalendarPage, typeof(CalendarPage));
-            Routing.RegisterRoute(Constants.TodayPage, typeof(TodayPage));
+            Routing.RegisterRoute(Constants.ListPage, typeof(ListPage));
             Routing.RegisterRoute(Constants.MainDetailsPage, typeof(MainDetailsPage));
-            Routing.RegisterRoute(Constants.TodayDetailsPage, typeof(TodayDetailsPage));
+            Routing.RegisterRoute(Constants.ListDetailsPage, typeof(ListDetailPage));
             Routing.RegisterRoute(Constants.PendingItemsPage, typeof(PendingItemsPage));
+           
         }
         public async Task GoBack()
         {

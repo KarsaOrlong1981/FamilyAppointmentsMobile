@@ -9,25 +9,23 @@ using Plugin.Maui.Calendar.Models;
 using FamilyAppointmentsMobile.Helpers;
 using CommunityToolkit.Maui.Core.Extensions;
 using FamilyAppointmentsMobile.Database;
+using Microsoft.Extensions.Logging;
 
 namespace FamilyAppointmentsMobile.ViewModels
 {
     public partial class MainViewModel : ObservableRecipient
     {
-        //private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<MainViewModel> log;
         private IDialogService dialogService;
         private IRestClientService client;
         private IConnectionService connectionService;
         private IShellNavigationService shellNavigationService;
         private IAppointmentsTransferService appointmentsTransferService;
         private DatabasePendingItems outStandingAppointmentsOperations;
-        private readonly SemaphoreSlim _connectionSemaphore = new(1, 1);
-
         private DateTime _currentMonth;
         
         [ObservableProperty] private FamilyMember selectedFamilyMember;
         [ObservableProperty] private ObservableCollection<PendingAppointment> pendingAppointments;
-        //[ObservableProperty] private ELayoutType layoutType;
         [ObservableProperty] private Appointment selectedAppointmentGeneral;
         [ObservableProperty] private DateTime date;
         [ObservableProperty] private EMembers eMember;
@@ -45,7 +43,7 @@ namespace FamilyAppointmentsMobile.ViewModels
 
         public MainViewModel()
         {
-            //logger.Info("Start mainViewModel.");
+            log = Ioc.Default.GetService<ILogger<MainViewModel>>();
             Date = DateTime.Now;
             dialogService = Ioc.Default.GetService<IDialogService>();
             shellNavigationService = Ioc.Default.GetService<IShellNavigationService>();
@@ -72,23 +70,18 @@ namespace FamilyAppointmentsMobile.ViewModels
             {
                 DispatcherHelper.CheckBeginInvokeOnUI(async () =>
                 {
-                    //var localConnection = await connectionService.LocalConnection();
-                    //if (!localConnection)
-                    //{
-                        var cloudConnection = await connectionService.CloudConnection();
-                        if (!cloudConnection)
-                        {
-
-                        }
-                    //}
+                    var cloudConnection = await connectionService.CloudConnection();
+                    if (!cloudConnection)
+                    {
+                        log.LogInformation("Cloud not reachable.");
+                    }
                     
                     await appointmentsTransferService.LoadAppointments();
-                    //await appointmentsTransferService.CheckForDeques();
                 });
             }
             catch (Exception ex) 
             {
-
+                log.LogError(ex,"Error on connecting to Cloud");
             }
         }
 
@@ -145,6 +138,10 @@ namespace FamilyAppointmentsMobile.ViewModels
             if (layoutType == ELayoutType.Calendar)
             {
                 await shellNavigationService.NavigateTo(Constants.CalendarPage);
+            }
+            else if (layoutType == ELayoutType.Todo)
+            {
+                await shellNavigationService.NavigateTo(Constants.ListPage);
             }
         }
 

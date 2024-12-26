@@ -10,5 +10,8 @@ namespace FamilyAppointmentsMobile.Models
         YesNo,
         OkCancel,
         Ok,
+        AddList,
+        EditList,
+        PickCategorie
     }
 }

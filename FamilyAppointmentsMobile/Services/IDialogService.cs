@@ -5,6 +5,7 @@ namespace FamilyAppointmentsMobile.Services
 {
     public interface IDialogService
     {
-        Task<bool> ShowMopupDialog(EMopUpType mopUpType, string title = "", string message = "", string member = "", Appointment appointment = null, bool isPendingItem = false);
+        Task<bool> ShowMopupDialog(EMopUpType mopUpType, string title = "", string message = "", string member = "", Appointment appointment = null, bool isPendingItem = false, TodoList todos = null);
+        public Task<string> ShowCategoriePickerMopupDialog();
     }
 }

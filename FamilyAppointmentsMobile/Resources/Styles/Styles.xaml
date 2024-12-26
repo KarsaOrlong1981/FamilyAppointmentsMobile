@@ -47,6 +47,15 @@
         <Setter Property="TextColor" Value="White" />
     </Style>
 
+    <Style x:Key="BorderCategoriesGroupStyle" TargetType="Border">
+        <Setter Property="HeightRequest" Value="50" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="BackgroundColor" Value="{StaticResource KarinColor}" />
+        <Setter Property="Stroke" Value="{StaticResource PinButtonBorderColor}" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 8,8,8,8"/>
+    </Style>
+
     <Style x:Key="BorderStyle" TargetType="Border">
         <Setter Property="MaximumWidthRequest" Value="300" />
         <Setter Property="MinimumWidthRequest" Value="250" />
@@ -57,6 +66,34 @@
         <Setter Property="StrokeShape" Value="RoundRectangle 8,8,8,8"/>
     </Style>
 
+    <Style x:Key="ListItemsSelectionBorderStyle" TargetType="Border" BasedOn="{StaticResource BorderStyle}">
+        <Setter Property="MaximumWidthRequest" Value="300" />
+        <Setter Property="MinimumWidthRequest" Value="200" />
+        <Setter Property="MaximumHeightRequest" Value="300" />
+        <Setter Property="MinimumHeightRequest" Value="50" />
+    </Style>
+
+    <Style x:Key="ListItemsBorderStyle" TargetType="Border" BasedOn="{StaticResource BorderStyle}">
+        <Setter Property="MaximumWidthRequest" Value="100" />
+        <Setter Property="MinimumWidthRequest" Value="50" />
+        <Setter Property="MaximumHeightRequest" Value="50" />
+        <Setter Property="MinimumHeightRequest" Value="30" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 20,20,20,20"/>
+    </Style>
+    
+    <Style x:Key="ListPageBorderStyle" TargetType="Border" BasedOn="{StaticResource BorderStyle}">
+        <Setter Property="Stroke" Value="Lime" />
+    </Style>
+
+    <Style x:Key="ListCategorieBorderStyle" TargetType="Border" BasedOn="{StaticResource BorderStyle}">
+        <Setter Property="Stroke" Value="Lime" />
+        <Setter Property="MaximumWidthRequest" Value="200" />
+        <Setter Property="MinimumWidthRequest" Value="50" />
+        <Setter Property="MaximumHeightRequest" Value="70" />
+        <Setter Property="MinimumHeightRequest" Value="40" />
+    </Style>
+    
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
     </Style>

@@ -26,6 +26,12 @@
                     Command="{Binding ChangeLayoutCommand}" 
                     CommandParameter="{x:Static models:ELayoutType.Calendar}"/>
                 <controls:DefaultEffectButton 
+                    ButtonText="Listen und Aufgaben" 
+                    WidthRequest="150"
+                    HeightRequest="45" 
+                    Command="{Binding ChangeLayoutCommand}" 
+                    CommandParameter="{x:Static models:ELayoutType.Todo}"/>
+                <controls:DefaultEffectButton 
                     ButtonText="Warteschlange" 
                     WidthRequest="150" 
                     HeightRequest="45" 

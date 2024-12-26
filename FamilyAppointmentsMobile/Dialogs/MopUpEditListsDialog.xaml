@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mopups:PopupPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FamilyAppointmentsMobile.Dialogs.MopUpEditListsDialog"
+             xmlns:mopups="clr-namespace:Mopups.Pages;assembly=Mopups"  
+             xmlns:mopupsanim="clr-namespace:Mopups.Animations;assembly=Mopups"
+             xmlns:controls="clr-namespace:FamilyAppointmentsMobile.Controls"
+             xmlns:models="clr-namespace:FamilyAppointmentsMobile.Models"
+             xmlns:vm="clr-namespace:FamilyAppointmentsMobile.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+             xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+             xmlns:input="clr-namespace:InputKit.Shared.Controls;assembly=InputKit.Maui"
+             x:DataType="vm:MopUpDialogViewModel"
+             HideSoftInputOnTapped="True" 
+             CloseWhenBackgroundIsClicked="false"
+             BackgroundColor="#90000000">
+    <mopups:PopupPage.Animation>
+        <mopupsanim:ScaleAnimation
+        DurationIn="700"
+        EasingIn="BounceOut"
+        PositionIn="Bottom"
+        PositionOut="Bottom"
+        ScaleIn="1"
+        ScaleOut="0.8" />
+    </mopups:PopupPage.Animation>
+    <Border
+         WidthRequest="350" HeightRequest="700"
+         StrokeThickness="2"
+         Stroke="{StaticResource LightGrayColor}"
+         BackgroundColor="{StaticResource BackgroundGray}">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="10,10,10,10"/>
+        </Border.StrokeShape>
+        <Grid Margin="10" RowDefinitions="Auto,Auto,30,*, 80" >
+            <!--<controls:DefaultEffectButton ImageSource="dark_icon_close_white.png" HeightRequest="50" WidthRequest="50" HorizontalOptions="End" Command="{Binding CloseDialogCommand}"/>
+            <Label 
+                 Grid.Row="1" 
+                 HorizontalOptions="Center"
+                 HorizontalTextAlignment="Center"
+                 Text="Neue Liste Erstellen" 
+                 FontSize="Title" 
+                 FontAttributes="Bold"
+                 TextDecorations="Underline"
+                 TextColor="White" />
+            <ScrollView Grid.Row="3">
+                <VerticalStackLayout  Spacing="8">
+                    <material:EditorField
+                        TextColor="White"
+                        TitleColor="LightGrey" 
+                        HorizontalOptions="Fill"    
+                        Text="{Binding ListNameEdit}"
+                        Title="Name der Liste"
+                        IsSpellCheckEnabled="False"
+                        AccentColor="SteelBlue">
+                        <material:EditorField.Behaviors>
+                            <toolkit:EventToCommandBehavior
+                                EventName="TextChanged" 
+                                Command="{Binding ListNameChangedEditCommand}"/>
+                        </material:EditorField.Behaviors>
+                    </material:EditorField>
+                    <Border Style="{StaticResource ListItemsSelectionBorderStyle}">
+                        <Grid RowDefinitions="Auto, *" >
+                            <controls:DefaultEffectButton HeightRequest="50" ButtonText="{Binding ChooseItemsButtonTextEdit}" Command="{Binding ChooseItemsEditCommand}" />
+                            <Grid Grid.Row="1" Margin="4" IsVisible="{Binding CanChooseItemsEdit}">
+                                <CollectionView
+                                    ItemSizingStrategy="MeasureAllItems"
+                                    HeightRequest="200"
+                                    SelectionMode="Multiple" 
+                                    SelectedItems="{Binding SelectedCollectionEdit}" 
+                                    SelectionChangedCommand="{Binding SelectionChangedEditCommand}"
+                                    ItemsSource="{Binding DefinedTaskCollectionEdit}">
+                                    <CollectionView.ItemsLayout>
+                                        <GridItemsLayout 
+                                        Orientation="Vertical"
+                                        Span="4" />
+                                    </CollectionView.ItemsLayout>
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:TodoTask">
+                                            <Border 
+                                            Margin="4"
+                                            Style="{StaticResource ListItemsBorderStyle}"
+                                            BackgroundColor="{StaticResource LightGrayColor}" >
+                                                <HorizontalStackLayout Margin="2">
+                                                    <Label Text="{Binding Description}" HorizontalTextAlignment="Center" TextColor="Black" FontSize="8" Style="{StaticResource BoldHandwrittenLabelStyle}" />
+                                                </HorizontalStackLayout>
+                                                <VisualStateManager.VisualStateGroups>
+                                                    <VisualStateGroup Name="CommonStates">
+                                                        <VisualState Name="Normal"></VisualState>
+                                                        <VisualState Name="Selected">
+                                                            <VisualState.Setters>
+                                                                <Setter Property="BackgroundColor" Value="{StaticResource KarinColor}"></Setter>
+                                                            </VisualState.Setters>
+                                                        </VisualState>
+                                                    </VisualStateGroup>
+                                                </VisualStateManager.VisualStateGroups>
+                                            </Border>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                    <HorizontalStackLayout Spacing="10">
+                        <material:EditorField
+                             TextColor="White"
+                             TitleColor="LightGrey" 
+                             HorizontalOptions="Fill" 
+                             Text="{Binding CustomItemDescriptionEdit}"
+                             Title="Benutzerdefinierter Eintrag zur Liste"
+                             IsSpellCheckEnabled="False"
+                             AccentColor="SteelBlue">
+                        </material:EditorField>
+                        <controls:DefaultEffectButton 
+                            Margin="0,2,0,0"
+                            WidthRequest="50" HeightRequest="48" ButtonText="OK" Command="{Binding AddNewItemEditCommand}" />
+                    </HorizontalStackLayout>
+
+                    <Border IsVisible="{Binding TodosHasItemsEdit}" Style="{StaticResource ListItemsSelectionBorderStyle}">
+                        <CollectionView
+                            ItemSizingStrategy="MeasureAllItems"
+                            ItemsSource="{Binding TodoTasksEdit}">
+                            <CollectionView.ItemsLayout>
+                                <GridItemsLayout 
+                                Orientation="Vertical"
+                                Span="4" />
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:TodoTask">
+                                    <Border 
+                                        Margin="4"
+                                        Style="{StaticResource ListItemsBorderStyle}"
+                                        BackgroundColor="{StaticResource KarinColor}" >
+                                        <Grid ColumnDefinitions="*,Auto" Margin="2">
+                                            <Label Text="{Binding Description}" HorizontalTextAlignment="Center" TextColor="Black" FontSize="8" Style="{StaticResource BoldHandwrittenLabelStyle}" />
+                                            <controls:ImageButtonPressed Grid.Column="1" Command="{Binding DeleteCommand}" ImageSource="close48.png" HeightRequest="20" WidthRequest="20" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </Border>
+                </VerticalStackLayout>
+            </ScrollView>
+
+
+            <HorizontalStackLayout
+                 Grid.Row="4"
+                 HorizontalOptions="Center" 
+                 Spacing="4"
+                 IsVisible="{Binding Type, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=EditList}">
+                <controls:DefaultEffectButton 
+                     ButtonText="Update"
+                     WidthRequest="100" 
+                     HeightRequest="60"
+                     IsEnabled="{Binding CanUpdateEdit}"
+                     Command="{Binding UpdateListEditCommand}" />
+                <controls:DefaultEffectButton 
+                     ButtonText="Reset"
+                     WidthRequest="100" 
+                     HeightRequest="60"
+                     Command="{Binding ResetCommand}"
+                     CommandParameter="{x:Static models:EMopUpType.EditList}"/>
+                <controls:DefaultEffectButton 
+                     ButtonText="Cancel"
+                     WidthRequest="100" 
+                     HeightRequest="60"
+                     Command="{Binding CancelCommand}" />
+            </HorizontalStackLayout>-->
+        </Grid>
+    </Border>
+
+</mopups:PopupPage>

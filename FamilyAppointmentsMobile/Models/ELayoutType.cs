@@ -8,5 +8,6 @@ namespace FamilyAppointmentsMobile.Models
         Calendar,
         Today,
         PendingItems,
+        Todo,
     }
 }

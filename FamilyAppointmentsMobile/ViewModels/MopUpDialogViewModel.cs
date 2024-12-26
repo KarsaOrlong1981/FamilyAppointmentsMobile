@@ -2,9 +2,12 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using FamilyAppointmentsMobile.Database;
+using FamilyAppointmentsMobile.Helpers;
 using FamilyAppointmentsMobile.Models;
 using FamilyAppointmentsMobile.Services;
+using Microsoft.Extensions.Logging;
 using Mopups.Interfaces;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 
@@ -12,6 +15,7 @@ namespace FamilyAppointmentsMobile.ViewModels
 {
     public partial class MopUpDialogViewModel : ObservableRecipient
     {
+        private readonly ILogger<MopUpDialogViewModel> log;
         private readonly IPopupNavigation popupNavigation;
         private readonly IConnectionService connectionService;
         private readonly TaskCompletionSource<bool> result;
@@ -29,11 +33,12 @@ namespace FamilyAppointmentsMobile.ViewModels
         [ObservableProperty]
         private EMopUpType type;
        
-        public MopUpDialogViewModel(IPopupNavigation popupNavigation, TaskCompletionSource<bool> tcs, EMopUpType mopUpType, string title = "", string message = "", string member = "", Appointment appointment = null, bool isPendingItem = false) 
+        public MopUpDialogViewModel(IPopupNavigation popupNavigation, TaskCompletionSource<bool> tcs, EMopUpType mopUpType, string title = "", string message = "", string member = "", Appointment appointment = null, bool isPendingItem = false, TodoList todos = null) 
         {
             restClientService = Ioc.Default.GetService<IRestClientService>();
             dialogService = Ioc.Default.GetService<IDialogService>();
             connectionService = Ioc.Default.GetService<IConnectionService>();
+            log = Ioc.Default.GetService<ILogger<MopUpDialogViewModel>>();
             databasePendingItems = new DatabasePendingItems();
             
             if (appointment != null)
@@ -56,6 +61,9 @@ namespace FamilyAppointmentsMobile.ViewModels
             this.member = member;
             this.appointment = appointment;
             this.isPendingItem = isPendingItem;
+            TodoTasks = new ObservableCollection<TodoTask>();
+            SelectedCollection = new ObservableCollection<object>();
+            DefinedTaskCollection = TodoListHelper.GetSortedPredefiendShoppingItemsList(RemoveTodoTask);
         }
 
         public RelayCommand CloseDialogCommand => closeDialogCommand ?? (closeDialogCommand = new RelayCommand(async () => await CloseDialogAction()));
@@ -88,6 +96,34 @@ namespace FamilyAppointmentsMobile.ViewModels
             await popupNavigation.PopAsync();
         }
 
+        [RelayCommand]
+        private void Reset(EMopUpType mopUpType)
+        {
+            if (mopUpType == EMopUpType.Add)
+            {
+                Date = DateTime.Now;
+                EventText = string.Empty;
+                var hour = DateTime.Now.Hour;
+                var minute = DateTime.Now.Minute;
+
+                Time = new TimeSpan(hour, minute, 0);
+            }
+            else if (mopUpType == EMopUpType.Edit)
+            {
+                Date = Appointment.Date.Value.Date;
+                Time = Appointment.Date.Value.TimeOfDay;
+                EventText = Appointment.Description;
+            }
+            else if (mopUpType == EMopUpType.AddList)
+            {
+                ListName = string.Empty;
+                TodoTasks.Clear();
+                CustomItemDescription = string.Empty;
+                SelectedCollection.Clear();
+                CanChooseItems = false;
+                OnPropertyChanged(nameof(TodosHasItems));
+            }
+        }
         #region Add Dialog
         [ObservableProperty]
         private string eventText;
@@ -127,45 +163,15 @@ namespace FamilyAppointmentsMobile.ViewModels
                 var combinedDateTime = Date.Value.Date + Time;
                 var appointmentEvent = new Appointment(description: EventText, date: combinedDateTime, member: Member, id: Guid.NewGuid().ToString());
 
-                //if (connectionService.IsConnected)
-                //{
-                    await restClientService.AddAppointmentAsync(appointmentEvent);
-                //}
-                //else
-                //{
-                //    await databasePendingItems.SavePendingOperationAsync(appointmentEvent, EPendingOperationType.Add);
-                //    await dialogService.ShowMopupDialog(EMopUpType.Message, "Nicht Verbunden !!!", "Der neue Eintrag wurde nun zwichen gespeichert und wird erst hinzugefügt wenn die Verbindung wieder hergestellt wurde.");
-                //    connectionService.OnPendingItemsChanged(true);
-                //}
+                await restClientService.AddAppointmentAsync(appointmentEvent);
 
                 result.SetResult(false);
                 await popupNavigation.PopAllAsync();
             }
             catch(Exception ex)
             {
-
+                log.LogError(ex, "Error on adding new appointment event.");
             }
-        }
-
-        [RelayCommand]
-        private void Reset(EMopUpType mopUpType)
-        {
-            if (mopUpType == EMopUpType.Add)
-            {
-                Date = DateTime.Now;
-                EventText = string.Empty;
-                var hour = DateTime.Now.Hour;
-                var minute = DateTime.Now.Minute;
-
-                Time = new TimeSpan(hour, minute, 0);
-            }
-            else if (mopUpType == EMopUpType.Edit)
-            {
-                Date = Appointment.Date.Value.Date;
-                Time = Appointment.Date.Value.TimeOfDay;
-                EventText = Appointment.Description;
-            }
-            
         }
 
         [RelayCommand]
@@ -203,28 +209,14 @@ namespace FamilyAppointmentsMobile.ViewModels
                 Appointment.Description = EventText;
                 Appointment.Date = Date.Value.Date + Time;
 
-                //if (connectionService.IsConnected)
-                //{
-                    await restClientService.UpdateAppointmentAsync(Appointment);
-                //}
-                //else if (!isPendingItem)
-                //{
-                //    await databasePendingItems.SavePendingOperationAsync(Appointment, EPendingOperationType.Update);
-                //    await dialogService.ShowMopupDialog(EMopUpType.Message, "Nicht Verbunden !!!", "Die Überarbeitung wurde nun zwichen gespeichert und wird erst aktuallisiert wenn die Verbindung wieder hergestellt wurde.");
-                //    connectionService.OnPendingItemsChanged(true);
-                //}
-                //else if (isPendingItem)
-                //{
-                //    // update database item
-                //    await databasePendingItems.UpdateByAppointmentIdAsync(Appointment.Id, Appointment);
-                //}
+                await restClientService.UpdateAppointmentAsync(Appointment);
 
                 result.SetResult(false);
                 await popupNavigation.PopAllAsync();
             }
             catch(Exception ex)
             {
-
+                log.LogError(ex, "Error on upadting appointment event");
             }
             
         }
@@ -234,32 +226,153 @@ namespace FamilyAppointmentsMobile.ViewModels
         {
             try
             {
-                //if (connectionService.IsConnected)
-                //{
-                    var res = await dialogService.ShowMopupDialog(EMopUpType.YesNo, "Achtung !!!", "Sicher das dieser Eintrag gelöscht werden soll?");
+                var res = await dialogService.ShowMopupDialog(EMopUpType.YesNo, "Achtung !!!", "Sicher das dieser Eintrag gelöscht werden soll?");
 
-                    if (res)
-                    {
-                        await restClientService.DeleteAppointmentAsync(Appointment.Id);
-                    }
-                //}
-                //else if (!isPendingItem)
-                //{
-                //    await databasePendingItems.SavePendingOperationAsync(Appointment, EPendingOperationType.Remove);
-                //    await dialogService.ShowMopupDialog(EMopUpType.Message, "Nicht Verbunden !!!", "Der gelöschte Eintrag wird nun zwichen gespeichert und erst entfernt wenn die Verbindung wieder hergestellt wurde.");
-                //    connectionService.OnPendingItemsChanged(true);
-                //}
-                //else if (isPendingItem)
-                //{
-                //    await databasePendingItems.DeleteByAppointmentIdAsync(Appointment.Id);
-                //}
+                if (res)
+                {
+                    await restClientService.DeleteAppointmentAsync(Appointment.Id);
+                }
+           
                 result.SetResult(false);
                 await popupNavigation.PopAllAsync();
             }
             catch (Exception ex)
             {
-
+                log.LogError(ex, "Error on removing appointment event.");
             } 
+        }
+        #endregion
+
+        #region Add new List
+
+        public bool ListNameIsValid => !string.IsNullOrEmpty(ListName);
+        public bool CustomItemDescIsValid => !string.IsNullOrEmpty(CustomItemDescription);
+
+        [ObservableProperty] private string listName;
+        [ObservableProperty] private ObservableCollection<TodoTask> todoTasks;
+        [ObservableProperty] private List<TodoTask> definedTaskCollection;
+        [ObservableProperty] private ObservableCollection<object> selectedCollection;
+        [ObservableProperty] private bool canChooseItems;
+        [ObservableProperty] private string chooseItemsButtonText = "Vorschläge anzeigen";
+        [ObservableProperty] private string customItemDescription;
+        [ObservableProperty] private bool isShoppingList = true;
+
+        public bool TodosHasItems => TodoTasks.Count > 0;
+
+        private void RemoveTodoTask(TodoTask task)
+        {
+            if (task != null)
+            {
+                TodoTasks.Remove(task);
+
+                var selectedItem = SelectedCollection.FirstOrDefault(item => item == task);
+                if (selectedItem != null)
+                {
+                    SelectedCollection.Remove(selectedItem);
+                }
+               
+                OnPropertyChanged(nameof(TodosHasItems));
+            }
+        }
+
+        [RelayCommand]
+        private void ListNameChanged()
+        {
+            OnPropertyChanged(nameof(ListNameIsValid));
+        }
+
+        [RelayCommand]
+        private async Task AddNewList()
+        {
+            try
+            {
+                var newList = new TodoList
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = ListName,
+                    Todos = TodoTasks.ToList(),
+                    IsShoppingList = IsShoppingList
+                };
+
+                foreach (var task in newList.Todos)
+                {
+                    task.TodoListId = newList.Id;
+                }
+
+                await restClientService.CreateOrUpdateTodoListAsync(newList);
+                result.SetResult(true);
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, "Error on saving new list.");
+                await dialogService.ShowMopupDialog(EMopUpType.Message, "Fehler", $"Es gab ein Problem beim Speichern der Liste: {ex.Message}");
+                result.SetResult(false);
+            }
+            finally
+            {
+                await popupNavigation.PopAllAsync();
+            }
+        }
+
+        [RelayCommand]
+        private async Task ChooseItems()
+        {
+            CanChooseItems = !CanChooseItems;
+            ChooseItemsButtonText = CanChooseItems ? "Vorschläge nicht mehr anzeigen" : "Vorschläge anzeigen";
+        }
+
+        [RelayCommand]
+        private void SelectionChanged()
+        {
+            foreach (var item in SelectedCollection.Cast<TodoTask>())
+            {
+                if (!TodoTasks.Contains(item))
+                {
+                    TodoTasks.Add(item);
+                }
+            }
+            
+            OnPropertyChanged(nameof(TodosHasItems));
+        }
+
+        [RelayCommand]
+        private void CustomItemDescChanged()
+        {
+            OnPropertyChanged(nameof(CustomItemDescIsValid));
+        }
+
+        [RelayCommand]
+        private async Task AddNewItem()
+        {
+            try
+            {
+                var result = "Sonstiges";
+
+                if (IsShoppingList)
+                    result = await dialogService.ShowCategoriePickerMopupDialog();
+
+                if (TodoTasks.Any(task => task.Description.Equals(CustomItemDescription, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return;
+                }
+
+                var newItem = new TodoTask(RemoveTodoTask)
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Description = CustomItemDescription,
+                    CategorieType = CategorieHelper.HandleStringCategorieType(result),
+                    IsDone = false
+                };
+
+                TodoTasks.Add(newItem);
+                CustomItemDescription = string.Empty;
+
+                OnPropertyChanged(nameof(TodosHasItems));
+            }
+            catch(Exception ex)
+            {
+                log.LogError(ex, "Error on adding new item.");
+            }
         }
         #endregion
     }
