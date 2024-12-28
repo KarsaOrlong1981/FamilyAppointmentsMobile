@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using FamilyAppointmentsMobile.Database;
 using FamilyAppointmentsMobile.Models;
+using Java.Lang.Reflect;
 using Microsoft.Extensions.Logging;
 using Plugin.Maui.Calendar.Models;
 using System.Collections.ObjectModel;
@@ -11,6 +12,7 @@ namespace FamilyAppointmentsMobile.Services
     public class AppointmentsTransferService : IAppointmentsTransferService
     {
         private readonly ILogger<AppointmentsTransferService> log;
+        private IART_Service artService;
         private IRestClientService client;
         private IConnectionService connectionService;
         private readonly SemaphoreSlim _initSemaphore = new(1, 1);
@@ -34,6 +36,7 @@ namespace FamilyAppointmentsMobile.Services
             log = Ioc.Default.GetService<ILogger<AppointmentsTransferService>>();
             log.LogInformation("Transfer service is init.");
             client = Ioc.Default.GetService<IRestClientService>();
+            artService = Ioc.Default.GetService<IART_Service>();
             connectionService = Ioc.Default.GetService<IConnectionService>();
             databasePendingItems = new DatabasePendingItems();
             databaseLocalItems = new DatabaseLocalItems();
@@ -104,7 +107,23 @@ namespace FamilyAppointmentsMobile.Services
                 List<Appointment> allAppointments;
 
                 allAppointments = await client.GetAllAppointmentsAsync() ?? new List<Appointment>();
-
+                try
+                {
+                    await artService?.LoadAndUpdateARTEventsAsync();
+                    if (artService.ART_Events != null && artService.ART_Events.Any())
+                    {
+                        foreach (var ev in artService.ART_Events)
+                        {
+                            var newAppointment = new Appointment(ev.EventName, ev.StartTime, "A.R.T.", Guid.NewGuid().ToString());
+                            allAppointments.Add(newAppointment);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log.LogError(ex, "Failed to get Events from A.R.T.");
+                }
+                
                 // Process appointments
                 if (allAppointments.Any())
                 {
@@ -135,7 +154,7 @@ namespace FamilyAppointmentsMobile.Services
             // Clear current appointments
             foreach (var member in CurrentFamilyMembers)
             {
-                member.Appointments.Clear();
+                    member.Appointments.Clear();
             }
 
             // Assign appointments to family members

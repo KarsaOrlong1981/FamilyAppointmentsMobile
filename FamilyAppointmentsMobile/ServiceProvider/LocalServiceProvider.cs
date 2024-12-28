@@ -28,6 +28,7 @@ namespace FamilyAppointmentsMobile.ServiceProvider
                     .AddSingleton<IShellNavigationService, ShellNavigationService>()
                     .AddSingleton<IConnectionService, ConnectionService>()
                     .AddSingleton<IAppointmentsTransferService, AppointmentsTransferService>()
+                    .AddSingleton<IART_Service, ART_Service>()
                     // Singleton ViewModels
                     .AddSingleton<NavigationBarViewModel>()
                     .AddSingleton<MainViewModel>()

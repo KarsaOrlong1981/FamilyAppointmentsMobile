@@ -12,6 +12,7 @@ namespace FamilyAppointmentsMobile
         public static readonly string PendingItemsPage = "PendingItemsPage";
         public const string DatabaseFilenamePending = "PendingAppointmentsDatabase.db2";
         public const string DatabaseFilenameLocal = "LocalAppointmentsDatabase.db4";
+        public const string DatabaseFilenameART = "ARTeventsDatabase.db1";
 
         public static string DatabasePathPending =>
            Path.Combine(FileSystem.AppDataDirectory, DatabaseFilenamePending);
@@ -26,6 +27,16 @@ namespace FamilyAppointmentsMobile
         public static string DatabasePathLocal =>
            Path.Combine(FileSystem.AppDataDirectory, DatabaseFilenameLocal);
         public const SQLite.SQLiteOpenFlags FlagsLocal =
+            // open the database in read/write mode
+            SQLite.SQLiteOpenFlags.ReadWrite |
+            // create the database if it doesn't exist
+            SQLite.SQLiteOpenFlags.Create |
+            // enable multi-threaded database access
+            SQLite.SQLiteOpenFlags.SharedCache;
+
+        public static string DatabasePathARTevents =>
+           Path.Combine(FileSystem.AppDataDirectory, DatabaseFilenameART);
+        public const SQLite.SQLiteOpenFlags FlagsARTevents =
             // open the database in read/write mode
             SQLite.SQLiteOpenFlags.ReadWrite |
             // create the database if it doesn't exist

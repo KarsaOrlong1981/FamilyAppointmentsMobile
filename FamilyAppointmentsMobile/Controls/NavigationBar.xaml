@@ -39,19 +39,14 @@
             <controls:ImageButtonPressed 
                 IsVisible="{Binding ConnectionType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=NotConnected}"
                 ImageSource="disconnected.png"
-                Command="{Binding ConnectLocalCommand}"
+                Command="{Binding ConnectToCloudCommand}"
                 Margin="0,0,8,0"
                 HeightRequest="35" 
                 WidthRequest="35"/>
             <controls:ImageButtonPressed 
-                IsVisible="{Binding ConnectionType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Local}"
-                ImageSource="connected.png"
-                Margin="0,0,8,0" 
-                HeightRequest="38" 
-                WidthRequest="38"/>
-            <controls:ImageButtonPressed 
                 IsVisible="{Binding ConnectionType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Cloud}"
                 ImageSource="cloud.png"
+                Command="{Binding ConnectToCloudCommand}"
                 Margin="0,0,8,0"
                 HeightRequest="35" 
                 WidthRequest="35"/>

@@ -4,8 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using FamilyAppointmentsMobile.Services;
 using System.Collections.ObjectModel;
 using FamilyAppointmentsMobile.Models;
-using System.Globalization;
-using Plugin.Maui.Calendar.Models;
 using FamilyAppointmentsMobile.Helpers;
 using CommunityToolkit.Maui.Core.Extensions;
 using FamilyAppointmentsMobile.Database;
@@ -21,6 +19,7 @@ namespace FamilyAppointmentsMobile.ViewModels
         private IConnectionService connectionService;
         private IShellNavigationService shellNavigationService;
         private IAppointmentsTransferService appointmentsTransferService;
+        
         private DatabasePendingItems outStandingAppointmentsOperations;
         private DateTime _currentMonth;
         
@@ -61,29 +60,42 @@ namespace FamilyAppointmentsMobile.ViewModels
             {
                 new FamilyMember("Karin", ResourceHelper.GetResource<Color>("KarinColor")),
                 new FamilyMember("Joerg", ResourceHelper.GetResource<Color>("JoergColor")),
-                new FamilyMember("Marvin", ResourceHelper.GetResource < Color >("MarvinColor")),
-                new FamilyMember("Lio", ResourceHelper.GetResource < Color >("LioColor"))
+                new FamilyMember("Marvin", ResourceHelper.GetResource <Color>("MarvinColor")),
+                new FamilyMember("Lio", ResourceHelper.GetResource <Color>("LioColor")),
+                new FamilyMember("A.R.T.", Colors.ForestGreen),
             };
-            appointmentsTransferService.CurrentFamilyMembers = FamilyMembers;
 
             try
             {
                 DispatcherHelper.CheckBeginInvokeOnUI(async () =>
                 {
+                    
+                    //SetARTevents();
+                    appointmentsTransferService.CurrentFamilyMembers = FamilyMembers;
                     var cloudConnection = await connectionService.CloudConnection();
                     if (!cloudConnection)
                     {
                         log.LogInformation("Cloud not reachable.");
                     }
-                    
+
                     await appointmentsTransferService.LoadAppointments();
                 });
             }
             catch (Exception ex) 
             {
-                log.LogError(ex,"Error on connecting to Cloud");
+                log.LogError(ex,"Error on connecting to Cloud and loading A.R.T events");
             }
         }
+
+        //private void SetARTevents()
+        //{
+        //    var member = FamilyMembers.FirstOrDefault(m => m.Name == "A.R.T.");
+
+        //    if (member != null)
+        //    {
+                
+        //    }
+        //}
 
         private void ConnectionService_PendingItemsChanged(object sender, bool e)
         {
@@ -124,6 +136,7 @@ namespace FamilyAppointmentsMobile.ViewModels
                     case "Karin": EMember = EMembers.Karin; break;
                     case "Marvin": EMember = EMembers.Marvin; break;
                     case "Lio": EMember = EMembers.Lio; break;
+                    case "A.R.T.": EMember = EMembers.A_R_T; break;
                 }
 
                 await shellNavigationService.NavigateTo(Constants.MainDetailsPage);

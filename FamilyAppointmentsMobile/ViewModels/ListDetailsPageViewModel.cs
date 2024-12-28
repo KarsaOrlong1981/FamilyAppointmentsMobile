@@ -18,6 +18,7 @@ namespace FamilyAppointmentsMobile.ViewModels
         private IShellNavigationService _shellNavigationService;
         private IAppointmentsTransferService _appointmentsTransferService;
         private List<TodoTaskGroup> _originalTasksGroups;
+        private List<TodoTask> _originalTasks;
         private TodoList currentList;
 
         public bool HasChanges => CheckHasChanges();
@@ -38,6 +39,7 @@ namespace FamilyAppointmentsMobile.ViewModels
             _appointmentsTransferService = Ioc.Default.GetService<IAppointmentsTransferService>();  
             _restClientService = Ioc.Default.GetService<IRestClientService>();
             currentList = _appointmentsTransferService?.CurrentTodoList;
+            _restClientService.TodosChanged += _restClientService_TodosChanged;
 
             if (currentList != null )
             {    
@@ -52,9 +54,18 @@ namespace FamilyAppointmentsMobile.ViewModels
                     IsShoppingList = false;
                     ListName = currentList.Name;
                     Tasks = currentList.Todos.ToObservableCollection();
+                    _originalTasks = CloneTasks(Tasks);
                 }         
             }
            
+        }
+
+        private void _restClientService_TodosChanged(object sender, EventArgs e)
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            {
+                await RefreshUpdatedTodoList();
+            });
         }
 
         private List<TodoTaskGroup> GroupItems(TodoList list)
@@ -80,28 +91,61 @@ namespace FamilyAppointmentsMobile.ViewModels
                 .ToList();
         }
 
+        private List<TodoTask> CloneTasks(IEnumerable<TodoTask> tasks)
+        {
+            return tasks.Select(task => new TodoTask
+            {
+                Id = task.Id,
+                Description = task.Description,
+                IsDone = task.IsDone,
+                TodoListId = task.TodoListId,
+                // Füge hier weitere Eigenschaften hinzu, falls erforderlich
+            }).ToList();
+        }
+
         private bool CheckHasChanges()
         {
-            if (IsShoppingList)
+            try
             {
-                if (_originalTasksGroups.Count != TasksGroups.Count)
-                    return true;
-
-                for (int i = 0; i < _originalTasksGroups.Count; i++)
+                if (IsShoppingList)
                 {
-                    var originalGroup = _originalTasksGroups[i];
-                    var currentGroup = TasksGroups[i];
-
-                    if (originalGroup.CategorieType != currentGroup.CategorieType)
+                    if (_originalTasksGroups.Count != TasksGroups.Count)
                         return true;
 
-                    if (originalGroup.Tasks.Count != currentGroup.Tasks.Count)
-                        return true;
-
-                    for (int j = 0; j < originalGroup.Tasks.Count; j++)
+                    for (int i = 0; i < _originalTasksGroups.Count; i++)
                     {
-                        var originalTask = originalGroup.Tasks[j];
-                        var currentTask = currentGroup.Tasks[j];
+                        var originalGroup = _originalTasksGroups[i];
+                        var currentGroup = TasksGroups[i];
+
+                        if (originalGroup.CategorieType != currentGroup.CategorieType)
+                            return true;
+
+                        if (originalGroup.Tasks.Count != currentGroup.Tasks.Count)
+                            return true;
+
+                        for (int j = 0; j < originalGroup.Tasks.Count; j++)
+                        {
+                            var originalTask = originalGroup.Tasks[j];
+                            var currentTask = currentGroup.Tasks[j];
+
+                            if (originalTask.Id != currentTask.Id ||
+                                originalTask.Description != currentTask.Description ||
+                                originalTask.IsDone != currentTask.IsDone)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                else // Normale To-Do-Liste
+                {
+                    if (_originalTasks.Count != Tasks.Count)
+                        return true;
+
+                    for (int i = 0; i < _originalTasks.Count; i++)
+                    {
+                        var originalTask = _originalTasks[i];
+                        var currentTask = Tasks[i];
 
                         if (originalTask.Id != currentTask.Id ||
                             originalTask.Description != currentTask.Description ||
@@ -112,25 +156,12 @@ namespace FamilyAppointmentsMobile.ViewModels
                     }
                 }
             }
-            else // Normale To-Do-Liste
+            catch (Exception ex)
             {
-                if (_appointmentsTransferService.CurrentTodoList.Todos.Count != Tasks.Count)
-                    return true;
-
-                for (int i = 0; i < _appointmentsTransferService.CurrentTodoList.Todos.Count; i++)
-                {
-                    var originalTask = _appointmentsTransferService.CurrentTodoList.Todos[i];
-                    var currentTask = Tasks[i];
-
-                    if (originalTask.Id != currentTask.Id ||
-                        originalTask.Description != currentTask.Description ||
-                        originalTask.IsDone != currentTask.IsDone)
-                    {
-                        return true;
-                    }
-                }
+                log.LogError(ex, "Failure on CheckHasChanges.");
+                return false;
             }
-
+            
             return false;
 
         }
@@ -241,18 +272,26 @@ namespace FamilyAppointmentsMobile.ViewModels
 
         private async Task RefreshUpdatedTodoList()
         {
-            var updatedList = await _appointmentsTransferService.RefreshCurrentTodoList(currentList.Id);
-            this.currentList = updatedList;
-            if (IsShoppingList)
+            try
             {
-                TasksGroups = GroupItems(currentList).ToObservableCollection();
-                _originalTasksGroups = CloneList(TasksGroups);
+                var updatedList = await _appointmentsTransferService.RefreshCurrentTodoList(currentList.Id);
+                this.currentList = updatedList;
+                if (IsShoppingList)
+                {
+                    TasksGroups = GroupItems(currentList).ToObservableCollection();
+                    _originalTasksGroups = CloneList(TasksGroups);
+                }
+                else
+                {
+                    ListName = currentList.Name;
+                    Tasks = currentList.Todos.ToObservableCollection();
+                    _originalTasks = CloneTasks(Tasks);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ListName = currentList.Name;
-                Tasks = currentList.Todos.ToObservableCollection();
-            }
+                log.LogError(ex, "Failed to refresh updated Todo list");
+            }  
         }
     }
 }

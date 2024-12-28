@@ -52,13 +52,16 @@ namespace FamilyAppointmentsMobile.ViewModels
         }
 
         [RelayCommand]
-        private async Task ConnectLocal()
-        {        
-            IsConnected = await connectionService.LocalConnection();
-            if (IsConnected) 
-                ConnectionType = EConnectionType.Local;
-            else
-                ConnectionType = EConnectionType.NotConnected;
+        private async Task ConnectToCloud()
+        { 
+            if (!IsConnected)
+            {
+               var success = await connectionService.CloudConnection();
+               if (success) 
+                    ConnectionType = EConnectionType.Cloud;
+               else 
+                    ConnectionType = EConnectionType.NotConnected;
+            }
         }
 
         private string GetPageTitle(string locationUri)

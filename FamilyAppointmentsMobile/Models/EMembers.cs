@@ -7,6 +7,7 @@ namespace FamilyAppointmentsMobile.Models
         Karin,
         Marvin,
         Lio,
-        Joerg
+        Joerg,
+        A_R_T,
     }
 }

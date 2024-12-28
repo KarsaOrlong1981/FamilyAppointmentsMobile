@@ -40,8 +40,9 @@
                 <CollectionView 
                     Margin="8"
                     IsVisible="{Binding LayoutType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=All}"
-                    VerticalOptions="Fill"
+                    HeightRequest="600"
                     HorizontalOptions="Fill"
+                    ItemSizingStrategy="MeasureAllItems"
                     SelectionMode="Single"
                     SelectedItem="{Binding SelectedAppointmentGeneral}"
                     SelectionChangedCommand="{Binding SelectedAppointmentCommand}"
@@ -83,8 +84,9 @@
                 <CollectionView 
                     Margin="8"
                     IsVisible="{Binding LayoutType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter=Today}"
-                    VerticalOptions="Fill"
+                    HeightRequest="600"
                     HorizontalOptions="Fill"
+                    ItemSizingStrategy="MeasureAllItems"
                     SelectionMode="Single"
                     SelectedItem="{Binding SelectedAppointmentGeneral}"
                     SelectionChangedCommand="{Binding SelectedAppointmentCommand}"

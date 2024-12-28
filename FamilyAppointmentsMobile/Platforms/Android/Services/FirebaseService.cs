@@ -14,6 +14,8 @@ namespace FamilyAppointmentsMobile.Platforms.Droid.Services
     {
         private readonly ILogger<FirebaseService> log;  
         private IRestClientService _restClientService;
+        private HashSet<int> scheduledNotifications = new HashSet<int>();
+
         public FirebaseService() 
         {
             log = Ioc.Default.GetService<ILogger<FirebaseService>>();
@@ -43,7 +45,10 @@ namespace FamilyAppointmentsMobile.Platforms.Droid.Services
         {
             base.OnMessageReceived(message);
             var notification = message.GetNotification();
-            SendNotification(notification.Body, notification.Title, message.Data);
+            if (notification != null)
+            {
+                SendNotification(notification.Body, notification.Title, message.Data);
+            }
         }
 
         private void SendNotification(string messageBody, string title, IDictionary<string, string> data)
@@ -70,6 +75,43 @@ namespace FamilyAppointmentsMobile.Platforms.Droid.Services
 
             var notificationManager = AndroidX.Core.App.NotificationManagerCompat.From(this);
             notificationManager.Notify(Constants.NotificationID, notificationBuilder.Build());
+        }
+
+        public void ScheduleNotification(ARTEvents artEvent)
+        {
+            // Berechne den Zeitpunkt einen Tag vorher um 16:00 Uhr
+            var notificationTime = artEvent.StartTime.AddDays(-1).Date.AddHours(16);
+
+            if (notificationTime > DateTime.Now) // Stelle sicher, dass die Benachrichtigung in der Zukunft liegt
+            {
+                int notificationId = artEvent.StartTime.GetHashCode();
+
+                // Überprüfe, ob die Benachrichtigung bereits geplant wurde
+                if (scheduledNotifications.Contains(notificationId))
+                {
+                    log.LogInformation($"Benachrichtigung für {artEvent.EventName} ist bereits geplant.");
+                    return;
+                }
+
+                scheduledNotifications.Add(notificationId);
+
+                var intent = new Intent(Android.App.Application.Context, typeof(NotificationReceiver));
+                intent.PutExtra("eventName", artEvent.EventName);
+                intent.PutExtra("eventTime", artEvent.StartTime.ToString());
+
+                var pendingIntent = PendingIntent.GetBroadcast(
+                    Android.App.Application.Context,
+                    notificationId,
+                    intent,
+                    PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
+
+                var alarmManager = (AlarmManager)Android.App.Application.Context.GetSystemService(Context.AlarmService);
+                var triggerTime = (long)(notificationTime.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds;
+
+                alarmManager.SetExactAndAllowWhileIdle(AlarmType.RtcWakeup, triggerTime, pendingIntent);
+
+                log.LogInformation($"Benachrichtigung für {artEvent.EventName} geplant.");
+            }
         }
     }
 }

@@ -30,6 +30,7 @@ namespace FamilyAppointmentsMobile.Models
                 case "Joerg": return ResourceHelper.GetResource<Color>("JoergColor");
                 case "Marvin": return ResourceHelper.GetResource<Color>("MarvinColor");
                 case "Lio": return ResourceHelper.GetResource<Color>("LioColor");
+                case "A.R.T.": return Colors.ForestGreen;
             }
             return Colors.White;
         }
