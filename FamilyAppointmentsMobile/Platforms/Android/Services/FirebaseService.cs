@@ -48,6 +48,10 @@ namespace FamilyAppointmentsMobile.Platforms.Droid.Services
             if (notification != null)
             {
                 SendNotification(notification.Body, notification.Title, message.Data);
+                if (notification.Title.Contains("wurde erstellt.") || notification.Title.Contains("wurde aktualisiert.") || notification.Title.Contains("wurde gelöscht."))
+                {
+                    _restClientService.OnTodosChangedNotificationReceived();
+                }
             }
         }
 

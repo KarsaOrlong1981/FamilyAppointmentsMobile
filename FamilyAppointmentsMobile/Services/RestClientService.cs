@@ -14,7 +14,9 @@ namespace FamilyAppointmentsMobile.Services
         private HttpClient _httpClient;
        
         public event EventHandler<Appointment> AppointmentsChanged;
-        public event EventHandler TodosChanged;
+        public event EventHandler<TodoList> TodosChanged;
+        public event EventHandler<TaskListsChangedEventArgs> TaskListsChanged;
+        public event EventHandler TodoChangedNotificationReceived;
 
         public RestServiceClient()
         {
@@ -397,7 +399,7 @@ namespace FamilyAppointmentsMobile.Services
             }
         }
 
-        public async Task CreateOrUpdateTodoListAsync(TodoList todoList)
+        public async Task CreateOrUpdateTodoListAsync(TodoList todoList, ETodoOperationType todoOperationType)
         {
             try
             {
@@ -405,7 +407,9 @@ namespace FamilyAppointmentsMobile.Services
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync("api/Todo", content);
                 response.EnsureSuccessStatusCode();
-                TodosChanged?.Invoke(this, EventArgs.Empty);
+                TodosChanged?.Invoke(this, todoList);
+                var args = new TaskListsChangedEventArgs { TodoList = todoList, TodoOperationType = todoOperationType };
+                TaskListsChanged?.Invoke(this, args);
                 log.LogInformation("Successfully created or updated TodoList.");
             }
             catch (HttpRequestException ex)
@@ -472,13 +476,15 @@ namespace FamilyAppointmentsMobile.Services
             }
         }
 
-        public async Task DeleteTodoListAsync(string todoListId)
+        public async Task DeleteTodoListAsync(string todoListId, TodoList todoList)
         {
             try
             {
                 var response = await _httpClient.DeleteAsync($"api/Todo/{todoListId}");
                 response.EnsureSuccessStatusCode();
-                TodosChanged?.Invoke(this, EventArgs.Empty);
+                TodosChanged?.Invoke(this, todoList);
+                var args = new TaskListsChangedEventArgs { TodoList = todoList, TodoOperationType = ETodoOperationType.RemoveList };
+                TaskListsChanged?.Invoke(this, args);
                 log.LogInformation($"Successfully deleted TodoList with ID {todoListId}.");
             }
             catch (HttpRequestException ex)
@@ -515,9 +521,9 @@ namespace FamilyAppointmentsMobile.Services
             }
         }
 
-        public void OnTodosChanged()
+        public void OnTodosChangedNotificationReceived()
         {
-            TodosChanged?.Invoke(this, EventArgs.Empty);
+            TodoChangedNotificationReceived?.Invoke(this, EventArgs.Empty);
         }
     }
 }

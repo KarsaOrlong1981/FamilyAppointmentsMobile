@@ -29,10 +29,34 @@ namespace FamilyAppointmentsMobile.ViewModels
             _restClientService = Ioc.Default.GetService<IRestClientService>();
             _connectionService = Ioc.Default.GetService<IConnectionService>();
             _appointmentsTransferService = Ioc.Default.GetService<IAppointmentsTransferService>();
-            _restClientService.TodosChanged += _restClientService_TodosChanged;
-            _connectionService.ConnectionChanged += _connectionService_ConnectionChanged;
+            _restClientService.TaskListsChanged += _restClientService_TaskListsChanged;
+            _restClientService.TodoChangedNotificationReceived += _restClientService_TodoChangedNotificationReceived;
             TaskLists = new ObservableCollection<TodoList>();
             LoadTodos();
+        }
+
+        private void _restClientService_TodoChangedNotificationReceived(object sender, EventArgs e)
+        {
+            LoadTodos();
+        }
+
+        private void _restClientService_TaskListsChanged(object sender, TaskListsChangedEventArgs e)
+        {
+            try
+            {
+                DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                {
+                    switch(e.TodoOperationType)
+                    {
+                        case ETodoOperationType.AddList: TaskLists.Add(e.TodoList); break;
+                        case ETodoOperationType.RemoveList: TaskLists.Remove(e.TodoList); break;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                log.LogError(ex, "Error on Todo lists changed");
+            }
         }
 
         private void LoadTodos()
@@ -50,16 +74,6 @@ namespace FamilyAppointmentsMobile.ViewModels
             {
                 log.LogError(ex, "Error on loading Todo lists from cloud");
             } 
-        }
-
-        private void _connectionService_ConnectionChanged(object sender, EConnectionType e)
-        {
-            LoadTodos();
-        }
-
-        private void _restClientService_TodosChanged(object sender, EventArgs e)
-        {
-            LoadTodos();
         }
 
         [RelayCommand]

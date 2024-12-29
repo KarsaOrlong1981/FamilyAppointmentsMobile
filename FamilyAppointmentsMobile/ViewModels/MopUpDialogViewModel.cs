@@ -299,7 +299,7 @@ namespace FamilyAppointmentsMobile.ViewModels
                     task.TodoListId = newList.Id;
                 }
 
-                await restClientService.CreateOrUpdateTodoListAsync(newList);
+                await restClientService.CreateOrUpdateTodoListAsync(newList, ETodoOperationType.AddList);
                 result.SetResult(true);
             }
             catch (Exception ex)

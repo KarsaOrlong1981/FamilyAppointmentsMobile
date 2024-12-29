@@ -230,8 +230,6 @@ namespace FamilyAppointmentsMobile.Services
             await _initSemaphoreTodos.WaitAsync();
             try
             {
-                List<Appointment> allAppointments;
-
                 var taskList = await client.GetAllTodoListsAsync() ?? new List<TodoList>();
                 TodoLists = taskList.ToObservableCollection();
             }

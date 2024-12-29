@@ -40,6 +40,7 @@ namespace FamilyAppointmentsMobile.ViewModels
             _restClientService = Ioc.Default.GetService<IRestClientService>();
             currentList = _appointmentsTransferService?.CurrentTodoList;
             _restClientService.TodosChanged += _restClientService_TodosChanged;
+            _restClientService.TodoChangedNotificationReceived += _restClientService_TodoChangedNotificationReceived;
 
             if (currentList != null )
             {    
@@ -60,11 +61,19 @@ namespace FamilyAppointmentsMobile.ViewModels
            
         }
 
-        private void _restClientService_TodosChanged(object sender, EventArgs e)
+        private void _restClientService_TodoChangedNotificationReceived(object sender, EventArgs e)
         {
             DispatcherHelper.CheckBeginInvokeOnUI(async () =>
             {
-                await RefreshUpdatedTodoList();
+               await RefreshUpdatedTodoList(null);
+            });
+        }
+
+        private void _restClientService_TodosChanged(object sender, TodoList todoList)
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            {
+                await RefreshUpdatedTodoList(todoList);
             });
         }
 
@@ -86,7 +95,6 @@ namespace FamilyAppointmentsMobile.ViewModels
                     Id = task.Id,
                     Description = task.Description,
                     IsDone = task.IsDone,
-                    // Weitere Eigenschaften hier kopieren
                 }).ToList()))
                 .ToList();
         }
@@ -99,7 +107,6 @@ namespace FamilyAppointmentsMobile.ViewModels
                 Description = task.Description,
                 IsDone = task.IsDone,
                 TodoListId = task.TodoListId,
-                // Füge hier weitere Eigenschaften hinzu, falls erforderlich
             }).ToList();
         }
 
@@ -183,7 +190,7 @@ namespace FamilyAppointmentsMobile.ViewModels
         {
             try
             {
-                await _restClientService.CreateOrUpdateTodoListAsync(currentList);
+                await _restClientService.CreateOrUpdateTodoListAsync(currentList, ETodoOperationType.UpdateList);
                 await _dialogService.ShowMopupDialog(EMopUpType.Message, "Erfolg", $"Die Liste - {currentList.Name} - wurde erfolgreich aktualisiert.");
             }
             catch (Exception ex)
@@ -222,8 +229,8 @@ namespace FamilyAppointmentsMobile.ViewModels
                 }
               
                 currentList.Todos.Add(newTask);
-                await _restClientService.CreateOrUpdateTodoListAsync(currentList);
-                await RefreshUpdatedTodoList();
+                await _restClientService.CreateOrUpdateTodoListAsync(currentList, ETodoOperationType.AddTask);
+                RefreshUpdatedTodoList(currentList);
                 IsAddingActive = false;
             }
             catch (Exception ex)
@@ -241,7 +248,7 @@ namespace FamilyAppointmentsMobile.ViewModels
 
                 if (res)
                 {
-                    await _restClientService.DeleteTodoListAsync(currentList.Id);
+                    await _restClientService.DeleteTodoListAsync(currentList.Id, currentList);
                     await _shellNavigationService.NavigateTo(Constants.ListPage);
                 }
             }
@@ -261,7 +268,8 @@ namespace FamilyAppointmentsMobile.ViewModels
                 if (res)
                 {
                     await _restClientService.DeleteTodoTaskAsync(task.Id);
-                    await RefreshUpdatedTodoList();
+                    currentList.Todos.Remove(task);
+                    RefreshUpdatedTodoList(currentList);
                 }
             }
             catch (Exception ex)
@@ -270,12 +278,20 @@ namespace FamilyAppointmentsMobile.ViewModels
             }
         }
 
-        private async Task RefreshUpdatedTodoList()
+        private async Task RefreshUpdatedTodoList(TodoList todoList)
         {
             try
             {
-                var updatedList = await _appointmentsTransferService.RefreshCurrentTodoList(currentList.Id);
-                this.currentList = updatedList;
+                if (todoList == null)
+                {
+                    var updatedList = await _appointmentsTransferService.RefreshCurrentTodoList(currentList.Id);
+                    this.currentList = updatedList;
+                }
+                else
+                {
+                    this.currentList = todoList;
+                }
+
                 if (IsShoppingList)
                 {
                     TasksGroups = GroupItems(currentList).ToObservableCollection();

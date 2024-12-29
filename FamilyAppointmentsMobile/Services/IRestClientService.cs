@@ -5,7 +5,9 @@ namespace FamilyAppointmentsMobile.Services
     public interface IRestClientService
     {
         event EventHandler<Appointment> AppointmentsChanged;
-        event EventHandler TodosChanged;
+        event EventHandler<TodoList> TodosChanged;
+        event EventHandler<TaskListsChangedEventArgs> TaskListsChanged;
+        event EventHandler TodoChangedNotificationReceived;
         Task<bool> ConnectToRestService();
         Task<bool> ConnectToCloud();
         Task<List<Appointment>> GetAllAppointmentsAsync();
@@ -19,13 +21,13 @@ namespace FamilyAppointmentsMobile.Services
         Task<bool> RegisterOrUpdateClient(Clients client);
         Task<List<TodoList>> GetAllTodoListsAsync();
         Task<TodoList> GetTodoListByIdAsync(string id);
-        Task CreateOrUpdateTodoListAsync(TodoList todoList);
+        Task CreateOrUpdateTodoListAsync(TodoList todoList, ETodoOperationType todoOperationType);
         Task<List<TodoTask>> GetTodoTasksByListIdAsync(string todoListId);
         Task CreateOrUpdateTodoTaskAsync(TodoTask todoTask);
-        Task DeleteTodoListAsync(string todoListId);
+        Task DeleteTodoListAsync(string todoListId, TodoList todoList);
         Task DeleteTodoTaskAsync(string todoTaskId);
         void OnAppointmentsChanged(Appointment appointment);
-        void OnTodosChanged();
+        void OnTodosChangedNotificationReceived();
 
     }
 }
