@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-	<application android:allowBackup="false" android:usesCleartextTraffic="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true" >
-		<receiver android:name=".NotificationReceiver"
-			  android:exported="true" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="100001" android:versionName="1.0.1">
+	<application android:allowBackup="false" android:usesCleartextTraffic="true" android:icon="@mipmap/appicon" android:supportsRtl="true" android:label="Planung">
+		<receiver android:name=".NotificationReceiver" android:exported="true" />
 	</application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
@@ -11,5 +10,4 @@
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 	<uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-	<uses-sdk android:minSdkVersion="23" android:targetSdkVersion="34" />
 </manifest>

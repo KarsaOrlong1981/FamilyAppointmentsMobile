@@ -71,7 +71,7 @@ namespace FamilyAppointmentsMobile.ViewModels
             var location = locationUri.Split('/').Last();
             if (location == "MainPage")
             {
-                result = "Familien Mitglieder";
+                result = "Hauptmenü";
                 CanGoBack = false;
             }
             else if (location == Constants.CalendarPage)

@@ -11,15 +11,15 @@
              HideSoftInputOnTapped="True" 
              CloseWhenBackgroundIsClicked="false"
              BackgroundColor="#90000000">
-    
+
     <mopups:PopupPage.Animation>
         <mopupsanim:ScaleAnimation
-            DurationIn="700"
-            EasingIn="BounceOut"
+            DurationIn="600"
+            EasingIn="CubicInOut"
             PositionIn="Bottom"
-            PositionOut="Bottom"
+            PositionOut="Top"
             ScaleIn="1"
-            ScaleOut="0.8" />
+            ScaleOut="1" />
     </mopups:PopupPage.Animation>
 
     <Border

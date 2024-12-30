@@ -18,12 +18,12 @@
              BackgroundColor="#90000000" >
     <mopups:PopupPage.Animation>
         <mopupsanim:ScaleAnimation
-            DurationIn="700"
-            EasingIn="BounceOut"
-            PositionIn="Bottom"
+            DurationIn="600"
+            EasingIn="CubicInOut"
+            PositionIn="Top"
             PositionOut="Bottom"
             ScaleIn="1"
-            ScaleOut="0.8" />
+            ScaleOut="1" />
     </mopups:PopupPage.Animation>
     <Border
      WidthRequest="350" HeightRequest="700"

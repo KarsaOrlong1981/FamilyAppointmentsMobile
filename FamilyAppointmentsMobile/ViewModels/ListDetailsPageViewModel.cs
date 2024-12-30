@@ -232,6 +232,7 @@ namespace FamilyAppointmentsMobile.ViewModels
                 await _restClientService.CreateOrUpdateTodoListAsync(currentList, ETodoOperationType.AddTask);
                 RefreshUpdatedTodoList(currentList);
                 IsAddingActive = false;
+                NewEntry = string.Empty;
             }
             catch (Exception ex)
             {
