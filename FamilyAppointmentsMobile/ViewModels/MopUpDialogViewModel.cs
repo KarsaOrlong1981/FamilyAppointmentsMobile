@@ -346,7 +346,7 @@ namespace FamilyAppointmentsMobile.ViewModels
         {
             try
             {
-                var result = "Sonstiges";
+                var result = Constants.Sonstiges;
 
                 if (IsShoppingList)
                     result = await dialogService.ShowCategoriePickerMopupDialog();

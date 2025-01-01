@@ -1,9 +1,4 @@
 ﻿using FamilyAppointmentsMobile.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FamilyAppointmentsMobile.Helpers
 {
@@ -13,63 +8,92 @@ namespace FamilyAppointmentsMobile.Helpers
         {
             return categorieType switch
             {
-                ECategorieType.None => "Sonstiges",
-                ECategorieType.BrotUndBackwaren => "Brot und Backwaren",
-                ECategorieType.ObstUndGemuese => "Obst und Gemüse",
-                ECategorieType.FleischUndWurst => "Fleisch und Wurstwaren",
-                ECategorieType.FischUndMeeresfruechte => "Fisch und Meeresfrüchte",
-                ECategorieType.Milchprodukte => "Milchprodukte",
-                ECategorieType.Tiefkuehlkost => "Tiefkühlkost",
-                ECategorieType.Getraenke => "Getränke",
-                ECategorieType.TrockenProdukte_Nudeln_Reis_Mehl => "Trockenprodukte",
-                ECategorieType.SnacksUndSuesswaren => "Snacks und Süßigkeiten",
-                ECategorieType.GewuerzeUndSaucen => "Gewürze und Saucen",
-                ECategorieType.KonservenUndFertigGerichte => "Konserven und Fertiggerichte",
-                ECategorieType.Drogerie => "Drogerie",
-                ECategorieType.Spirituosen => "Spirituosen",
-                ECategorieType.Haushaltwaren => "Haushaltwaren",
-                ECategorieType.Tierbedarf => "Tierbedarf",
-                ECategorieType.Schreibwaren => "Schreibwaren",
-                ECategorieType.Elektronik => "Elektronik",
-                ECategorieType.KleidungUndSchuhe => "Kleidung und Schuhe",
-                ECategorieType.Spielwaren => "Spielwaren",
-                ECategorieType.BuecherUndZeitschriften => "Bücher und Zeitschriften",
-                ECategorieType.Blumen => "Blumen und Pflanzen",
-                ECategorieType.SportUndFreizeit => "Sport und Freizeit",
-                _ => "Sonstiges" // Fallback für unbekannte Kategorien
+                ECategorieType.None => Constants.Sonstiges,
+                ECategorieType.BrotUndBackwaren => Constants.BrotUndBackwaren,
+                ECategorieType.ObstUndGemuese => Constants.ObstUndGemuese,
+                ECategorieType.FleischUndWurst => Constants.FleischUndWurst,
+                ECategorieType.FischUndMeeresfruechte => Constants.FischUndMeer,
+                ECategorieType.Milchprodukte => Constants.Milchprodukte,
+                ECategorieType.Tiefkuehlkost => Constants.Tiefkuehlkost,
+                ECategorieType.Getraenke => Constants.Getraenke,
+                ECategorieType.TrockenProdukte_Nudeln_Reis_Mehl => Constants.TrockenProdukte,
+                ECategorieType.SnacksUndSuesswaren => Constants.Snacks,
+                ECategorieType.GewuerzeUndSaucen => Constants.Gewuerze,
+                ECategorieType.KonservenUndFertigGerichte => Constants.Konserven,
+                ECategorieType.Drogerie => Constants.Drogerie,
+                ECategorieType.Spirituosen => Constants.Spirituosen,
+                ECategorieType.Haushaltwaren => Constants.Haushaltwaren,
+                ECategorieType.Tierbedarf => Constants.Tierbedarf,
+                ECategorieType.Schreibwaren => Constants.Schreibwaren,
+                ECategorieType.Elektronik => Constants.Elektronik,
+                ECategorieType.KleidungUndSchuhe => Constants.Kleidung,
+                ECategorieType.Spielwaren => Constants.Spielwaren,
+                ECategorieType.BuecherUndZeitschriften => Constants.BuecherZeitschriften,
+                ECategorieType.Blumen => Constants.BlumenPflanzen,
+                ECategorieType.SportUndFreizeit => Constants.SportFreizeit,
+                _ => Constants.Sonstiges 
             };
         }
 
         public static ECategorieType HandleStringCategorieType(string categorie)
         {
-            var result = ECategorieType.None;
-            switch (categorie)
+            return categorie switch
             {
-                case "Sonstiges": result = ECategorieType.None; break;
-                case "Brot und Backwaren": result = ECategorieType.BrotUndBackwaren; break;
-                case "Obst und gemüse": result = ECategorieType.ObstUndGemuese; break;
-                case "Fleisch und Wurstwaren": result = ECategorieType.FleischUndWurst; break;
-                case "Fisch und Meeresfrüchte": result = ECategorieType.FischUndMeeresfruechte; break;
-                case "Milchprodukte": result = ECategorieType.Milchprodukte; break;
-                case "Tiefkühlkost": result = ECategorieType.Tiefkuehlkost; break;
-                case "Getränke": result = ECategorieType.Getraenke; break;
-                case "Trockenprodukte": result = ECategorieType.TrockenProdukte_Nudeln_Reis_Mehl; break;
-                case "Snacks und Süßigkeiten": result = ECategorieType.SnacksUndSuesswaren; break;
-                case "Gewürze und Saucen": result = ECategorieType.GewuerzeUndSaucen; break;
-                case "Konserven und Fertiggerichte": result = ECategorieType.KonservenUndFertigGerichte; break;
-                case "Drogerie": result = ECategorieType.Drogerie; break;
-                case "Spirituosen": result = ECategorieType.Spirituosen; break;
-                case "Haushaltwaren": result = ECategorieType.Haushaltwaren; break;
-                case "Tierbedarf": result = ECategorieType.Tierbedarf; break;
-                case "Schreibwaren": result = ECategorieType.Schreibwaren; break;
-                case "Elektronik": result = ECategorieType.Elektronik; break;
-                case "Kleidung und Schuhe": result = ECategorieType.KleidungUndSchuhe; break;
-                case "Spielwaren": result = ECategorieType.Spielwaren; break;
-                case "Bücher und Zeitschriften": result = ECategorieType.BuecherUndZeitschriften; break;
-                case "Blumen und Pflanzen": result = ECategorieType.Blumen; break;
-                case "Sport und Freizeit": result = ECategorieType.SportUndFreizeit; break;
-            }
-            return result;
+                Constants.Sonstiges => ECategorieType.None,
+                Constants.BrotUndBackwaren => ECategorieType.BrotUndBackwaren,
+                Constants.ObstUndGemuese => ECategorieType.ObstUndGemuese,
+                Constants.FleischUndWurst => ECategorieType.FleischUndWurst,
+                Constants.FischUndMeer => ECategorieType.FischUndMeeresfruechte,
+                Constants.Milchprodukte => ECategorieType.Milchprodukte,
+                Constants.Tiefkuehlkost => ECategorieType.Tiefkuehlkost,
+                Constants.Getraenke => ECategorieType.Getraenke,
+                Constants.TrockenProdukte => ECategorieType.TrockenProdukte_Nudeln_Reis_Mehl,
+                Constants.Snacks => ECategorieType.SnacksUndSuesswaren,
+                Constants.Gewuerze => ECategorieType.GewuerzeUndSaucen,
+                Constants.Konserven => ECategorieType.KonservenUndFertigGerichte,
+                Constants.Drogerie => ECategorieType.Drogerie,
+                Constants.Spirituosen => ECategorieType.Spirituosen,
+                Constants.Haushaltwaren => ECategorieType.Haushaltwaren,
+                Constants.Tierbedarf => ECategorieType.Tierbedarf,
+                Constants.Schreibwaren => ECategorieType.Schreibwaren,
+                Constants.Elektronik => ECategorieType.Elektronik,
+                Constants.Kleidung => ECategorieType.KleidungUndSchuhe,
+                Constants.Spielwaren => ECategorieType.Spielwaren,
+                Constants.BuecherZeitschriften => ECategorieType.BuecherUndZeitschriften,
+                Constants.BlumenPflanzen => ECategorieType.Blumen,
+                Constants.SportFreizeit => ECategorieType.SportUndFreizeit,
+                _ => ECategorieType.None
+            };
+        }
+
+        public static List<Categorie> SetCategories()
+        {
+            return new List<Categorie>
+            {
+                new Categorie { Name = Constants.Sonstiges },
+                new Categorie { Name = Constants.BrotUndBackwaren },
+                new Categorie { Name = Constants.ObstUndGemuese },
+                new Categorie { Name = Constants.FleischUndWurst },
+                new Categorie { Name = Constants.FischUndMeer },
+                new Categorie { Name = Constants.Milchprodukte },
+                new Categorie { Name = Constants.Tiefkuehlkost },
+                new Categorie { Name = Constants.Getraenke },
+                new Categorie { Name = Constants.TrockenProdukte },
+                new Categorie { Name = Constants.Snacks },
+                new Categorie { Name = Constants.Gewuerze },
+                new Categorie { Name = Constants.Konserven },
+                new Categorie { Name = Constants.Drogerie },
+                new Categorie { Name = Constants.Spirituosen },
+                new Categorie { Name = Constants.Haushaltwaren },
+                new Categorie { Name = Constants.Tierbedarf },
+                new Categorie { Name = Constants.Schreibwaren },
+                new Categorie { Name = Constants.Elektronik },
+                new Categorie { Name = Constants.Kleidung },
+                new Categorie { Name = Constants.Spielwaren },
+                new Categorie { Name = Constants.BuecherZeitschriften },
+                new Categorie { Name = Constants.BlumenPflanzen },
+                new Categorie { Name = Constants.SportFreizeit }
+            };
         }
     }
 }

@@ -55,5 +55,29 @@ namespace FamilyAppointmentsMobile
         public static readonly string FireBaseProjectID = "fir-notificationsservice";
 
         public const string WebPushCert = "BFgsYjEwoaQ8b6v0AhCqB9u7h9GVzDRg7zu_0UWPV7EN1BAGBjBm0uXimwV4N8jWqtT6xiYJZTMv-ldBEM4N2oM";
+
+        public const string Sonstiges = "Sonstiges";
+        public const string BrotUndBackwaren = "Brot und Backwaren";
+        public const string ObstUndGemuese = "Obst und Gemüse";
+        public const string FleischUndWurst = "Fleisch und Wurstwaren";
+        public const string FischUndMeer = "Fisch und Meeresfrüchte";
+        public const string Milchprodukte = "Milchprodukte";
+        public const string Tiefkuehlkost = "Tiefkühlkost";
+        public const string Getraenke = "Getränke";
+        public const string TrockenProdukte = "Trockenprodukte";
+        public const string Snacks = "Snacks und Süßigkeiten";
+        public const string Gewuerze = "Gewürze und Saucen";
+        public const string Konserven = "Konserven und Fertiggerichte";
+        public const string Drogerie = "Drogerie";
+        public const string Spirituosen = "Spirituosen";
+        public const string Haushaltwaren = "Haushaltwaren";
+        public const string Tierbedarf = "Tierbedarf";
+        public const string Schreibwaren = "Schreibwaren";
+        public const string Elektronik = "Elektronik";
+        public const string Kleidung = "Kleidung und Schuhe";
+        public const string Spielwaren = "Spielwaren";
+        public const string BuecherZeitschriften = "Bücher und Zeitschriften";
+        public const string BlumenPflanzen = "Blumen und Pflanzen";
+        public const string SportFreizeit = "Sport und Freizeit";
     }
 }
